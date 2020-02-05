@@ -1,0 +1,130 @@
+%|----------|
+%| Abstract |
+%|----------|
+\begin{abstract}
+We present the public data release of halo and galaxy catalogues extracted from
+the \eagle suite of cosmological hydrodynamical simulations of galaxy
+formation. These simulations were performed with an enhanced version of the
+\gadget code that includes a modified hydrodynamics solver, time-step limiter
+and subgrid treatments of baryonic physics, such as stellar mass loss,
+element-by-element radiative cooling, star formation and feedback from star
+formation and black hole accretion. The simulation suite includes runs performed
+in volumes ranging from 25 to 100 comoving megaparsecs per side, with numerical
+resolution chosen to marginally resolve the Jeans mass of the gas at the star
+formation threshold. The free parameters of the subgrid models for feedback are
+calibrated to the redshift $z=0$ galaxy stellar mass function, galaxy sizes and
+black hole mass - stellar mass relation. The simulations have been shown to
+match a wide range of observations for present-day and higher-redshift galaxies.
+The raw particle data have been used to link galaxies across redshifts by
+creating merger trees. The indexing of the tree produces a simple way to connect
+a galaxy at one redshift to its progenitors at higher redshift and to identify
+its descendants at lower redshift. In this paper we present a relational
+database which we are making available for general use. A large number of
+properties of haloes and galaxies and their merger trees are stored in the
+database, including stellar masses, star formation rates, metallicities,
+photometric measurements and mock $gri$ images. Complex queries can be created
+to explore the evolution of more than $10^5$ galaxies, examples of which are
+provided in appendix. The relatively good and broad agreement of the simulations
+with a wide range of observational datasets makes the database an ideal resource
+for the analysis of model galaxies through time, and for connecting and
+interpreting observational datasets.
+\end{abstract}
+
+\begin{keyword}
+cosmology: theory - galaxies: formation - galaxies: evolution - method: numerical
+\end{keyword}
+
+\end{frontmatter}
+
+%|--------------|
+%| Introduction |
+%|--------------|
+\section{Introduction}
+
+Galaxy formation is a complex, non-linear process that involves a wide range of
+physical and astrophysical phenomena, from the evolution of dark matter
+clustering to intricate feedback effects coupling gas cooling and outflows to
+star and black hole formation. Theoretical studies of galaxy formation thus
+require rigorous detailed modelling to link together these phenomena over a very
+wide range of scales. Two techniques have been developed for this purpose:
+semianalytic modelling \citep{White1991} and hydrodynamical simulations
+\citep{Carlberg1990,Katz1992}. Both techniques have been extensively developed
+over the past 25 years \citep[e.g.][for semi-analytic
+  models]{Porter2014,Henriques2015,Lacey2015} and \citep[e.g.][for hydrodynamical
+  simulations]{Oppenheimer2010,Puchwein2013,
+  Dubois2014,Okamoto2014,Vogelsberger2014,Khandai2015}.
+
+Recently, the Virgo\footnote{\url{http://virgo.dur.ac.uk/}} Consortium's
+``Evolution and Assembly of GaLaxies and their Environments'' simulation suite
+\citep[\eagle,][]{Schaye2015,Crain2015} has been able to reproduce key
+observational datasets, such as the present-day stellar mass function of
+galaxies, the correlation of black hole mass and stellar mass and the dependence
+of galaxy sizes on stellar mass, with unprecedented fidelity. As well as
+reproducing these observations, which were used during the calibration of the
+simulation parameters, the simulation outputs match many other properties of the
+observed galaxy population and the intergalactic medium both at the present day
+and at earlier epochs, as we briefly discuss below. These simulations therefore
+provide a powerful resource for understanding the formation of galaxies and for
+linking and interpreting observational datasets.
+
+The aim of this paper is to introduce and make available a relational database
+that can be queried using the Structured Query Language (\sql) to explore and
+exploit the halo and galaxy catalogues of the main \eagle simulations. Columns
+containing integrated quantities describing the galaxies, such as stellar mass,
+star formation rates, metallicities and luminosities, are provided for more than
+$10^5$ simulated galaxies and these can be individually followed through their
+evolution across cosmic time. This database is available at the address
+\dbAddress.
+
+The simulations follow the gravitational hydrodynamical equations, tracking the
+evolution of baryons and dark matter. The initial conditions reflect the small
+density fluctuations observed in the cosmic microwave background (CMB). By
+tracking the movement of baryon and dark matter particles, the simulations
+calculate how these fluctuations are amplified by gravity, and how pressure and
+radiative cooling of baryons separate these two matter components of the
+universe. The simulations include subgrid formulations to account for processes
+that cannot be directly resolved in the calculation and that describe how stars
+and black holes form and impact the matter distribution around them. \eagle
+improves on previous hydrodynamical simulations of representative volumes,
+through the use of physically motivated subgrid source and sink terms as well as
+through the adoption of a clear strategy for the calibration of uncertain
+subgrid parameters \citep{Crain2015} and by producing a galaxy population that
+reproduces many of the characteristics of the observed population over a wide
+range of redshifts.
+
+~\\
+
+The usability of the simulation data products is greatly enhanced when presented
+in a relational database, making it simple and quick to select galaxy samples
+based on multiple galaxy properties, to connect them to their halos and to
+follow their evolution over cosmic time \citep{Lemson2006a}.  Such databases
+were originally designed to host results from large surveys \citep[e.g. the SDSS
+  SkyServer][]{Szalay2000} and later the halo catalogues from dark matter
+simulations and galaxy catalogues from semi-analytic models \citep[applied to
+  the \emph{Millennium Simulation}, see][]{Lemson2006b}. They have since been
+expanded to include the wider range of data available from hydrodynamical
+simulations \citep[e.g.][]{Dolag2009,Khandai2015,Nelson2015}. The database
+allows multiple indexing of the data that significantly enhances access speed
+and allows the selection of smaller data subsets that can be quickly analysed
+using simple scripting languages. This approach avoids the need for the user to
+copy the raw simulation data or even just the full galaxy catalogues, reducing
+data transfer volumes to a manageable level. The galaxy properties stored in the
+database can be compared to observations or to other models, whilst the physics
+of galaxy formation can be explored by tracking an individual galaxy's behaviour
+and environment through cosmic time.
+
+This paper is intended as a reference guide for accessing the publicly available
+\eagle database, and is laid out as follows. Section \ref{eagle_sim_suite}
+presents a brief overview of the \eagle simulation suite, including the list of
+simulations available in the database and the values of the subgrid parameters
+that vary, as well as an overview of the construction of the merger trees and
+database tables.  A short tutorial describing how to access the data is
+presented in Section \ref{database_usage}. We give some words of caution and
+some remarks on the simulations in Section~\ref{caveats} and conclude in
+Section~\ref{conclusion}. Some additional examples combining the {\sc python}
+and \sql languages to access the data are given in \ref{example_scripts} whilst
+the full list of galaxy and halo properties available in this data release is
+given in \ref{appendix_quantities} together with a list of output redshifts in
+\ref{appendix_snapshot} and detailed equations given in \ref{appendix_cosmo}.
+Throughout this paper we quote magnitudes in the AB system and use
+\squotes{h-free} units unless stated otherwise.

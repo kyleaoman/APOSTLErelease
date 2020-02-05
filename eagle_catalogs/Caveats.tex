@@ -1,0 +1,152 @@
+%|-----------------------------|
+%| Recommendations and Caveats |
+%|-----------------------------|
+\section{Recommendations, caveats and credits}
+\label{caveats}
+
+\subsection{Caveats regarding the usage of the data}
+
+In this section we list a series of recommendations and known limitations that the
+authors have uncovered while working on the analysis of the simulation and the
+preparation of the database. These points should be taken into consideration to
+exploit the simulation outputs fully and to avoid mistakes in the interpretation
+of the results.
+
+\paragraph{\bf Finite resolution}
+When using the galaxy catalogues, it should be remembered that the properties of
+low-mass galaxies should be treated with caution. Large numbers of particles are
+required to adequately sample the formation history of a galaxy. In general, we
+find that many galaxy properties are unreliable below a stellar mass of $10^{9}
+\Msol$ for the intermediate resolution simulations \citep{Schaye2015}. For any
+given quantity, these effects can be assessed by comparing the Ref-L0025N0376
+simulation with the higher-resolution Recal-L0025N0752 and Ref-L0025N0752
+simulations.
+
+\paragraph{\bf Finite volume}
+Although the main simulation is one of the largest of its kind, its volume is
+still only $10^{-3}~\rm{cGpc}^3$, a volume much smaller than the volumes
+typically probed by surveys of the extragalactic Universe. This implies that
+rare objects are unlikely to be found in the simulation volume. Moreover, due to
+missing large-scale modes, the number density of rare objects will typically be
+underestimated. Only a handful of haloes with mass $M_{200}$
+(\texttt{Group\_M\_Crit200} in the {\bf FOF} table) above $10^{14}\Msol$ are
+present in the main simulation, limiting the analysis of cluster-like
+objects. The convergence with box size can be assessed by comparing the main
+simulation to the smaller volumes that use the same resolution.
+
+\paragraph{\bf Aperture masses and SFRs} 
+The stripping of satellite galaxies as they orbit within a halo generates a
+significant mass loss at large radii. The resulting diffuse light (and any
+diffuse star formation) is extremely difficult to observe and is not commonly
+included in observational galaxy catalogues.  Furthermore, the total galaxy
+stellar masses and star formation rates can depend strongly on the precise
+assignment of particles to the main subhalo within each FOF group by the
+\subfind algorithm, which can lead to spurious total mass evolution.  For these
+reasons, studies published by the EAGLE team use aperture masses and star
+formation rates, typically in an aperture of $30~\rm{pkpc}$. As discussed by
+\cite{Schaye2015}, this corresponds roughly to an $R_{80}$ Petrosian aperture
+and is hence particularly well-suited to comparison with observations. We
+recommend the use of aperture values when available.
+
+\paragraph{\bf Self-bound star clusters and black holes}
+As discussed by \cite{Schaye2015}, small dense stellar regions within galaxies
+may occasionally be identified by \subfind as distinct subhaloes and hence
+'galaxies'. These appear in the catalogue as rather unusual objects with little
+stellar mass but anomalously high metallicity or black hole mass. These
+``spurious'' galaxies are flagged in the database in the column {\tt Spurious}
+(see the table in \ref{appendix_quantities}). Such objects should not be
+considered as genuine galaxies and should be discarded from samples of simulated
+galaxies.
+
+\paragraph{\bf Black hole masses and accretion rates}
+The black hole masses given in the main table (table {\bf SubHalo}, column {\tt
+  BlackHoleMass}) do not directly correspond to the mass of the central
+supermassive black hole of a galaxy, but to a summed value of all black holes
+assigned to that subhalo. For cases where {\tt
+  BlackHoleMass} $> 10^6\Msol$ this closely approximates the mass of
+the most massive black hole. {\tt MassType\_BH} refers to the sum of the black
+hole particle masses (see \ref{appendix_cosmo} for details of particle and
+subgrid masses) and therefore should not be used for a galaxy's black hole
+mass. Similarly, due to the coarse time sampling of the outputs, the high
+temporal variability of the black hole accretion rates cannot be captured in the
+database outputs and as such the quantity {\tt BlackHoleMassAccretionRate} should be
+treated with great care.
+
+\paragraph{\bf Stellar velocity dispersion and morphology}
+The field {\tt StellarVelocityDispersion} stored in the {\bf SubHalo} table
+is a measure of the kinetic energy of the stars, $\sigma = \sqrt{2 E_{\rm{K}} /
+  3 M}$, and not a measure of the amount of stellar kinetic energy in dispersion
+as opposed to rotation. In particular, it cannot be used to distinguish
+rotationally supported galaxies (spirals) from dispersion supported galaxies
+(ellipticals).
+
+\paragraph{\bf Galaxy images and magnitude tables}
+The images provided in the database are generated using only the particles
+within a particular subhalo, in order to correspond with an entry in the
+database tables. As a result satellites or merging partners may not be visible
+in the images. While the images are observed as if redshifted to $z=0.1$ to
+approximate typical SDSS colours, the magnitude tables are measured in the
+rest-frame. The inclusion of different population synthesis models, dust
+absorption and the relative scaling of images also implies that images are not
+reducible to magnitude table entries. 
+
+\paragraph{\bf This simulation is not the real Universe} 
+The papers presenting \eagle have shown that the simulation broadly reproduces a
+wide set of observational properties of galaxies and the intergalactic
+medium. When using the database it should nevertheless be remembered that there
+are known discrepancies between the simulation results and observational
+data. In particular, we highlight the following points:
+
+
+\begin{itemize}
+\item Although the $z=0.1$ stellar mass function was used in the calibration of
+  the simulation, the stellar mass density is approximately $20\%$ lower than
+  inferred from observations \citep{Schaye2015,Furlong2015}. This missing mass
+  can be related to the slight undershoot of the ``knee'' of the simulated
+  galaxy stellar mass function.
+
+\item The evolution of specific star formation rates broadly follows the trends
+  seen in observational data, but with a normalisation lower by, depending on
+  redshift, 0.3 - 0.5 dex \citep{Schaye2015, Furlong2015}. Note, however, that
+  the \eagle galaxies are in good agreement with the recent recalibration of
+  star formation indicators by \cite{Chang2015} \citep[see Fig. 5 of ][]{Schaller2015b}.
+
+\item The present-day stellar mass -- metallicity relation in the
+  intermediate-resolution Ref- model is flatter than the one inferred from
+  observational data \citep{Schaye2015}.  Note, however, that the relation
+  becomes steeper in the higher-resolution Recal-L0025N0752 simulation, in
+  agreement with the observations.
+
+\item The transition from active to passive galaxies occurs at too high a
+  stellar mass at $z=0$ \citep{Schaye2015, Trayford2015}.
+
+\end{itemize}
+
+This list of flaws is certainly not exhaustive. Future papers will
+undoubtedly uncover further deficiencies.
+
+\subsection{Acknowledgement of usage}
+To recognise the effort of the individuals involved in the design and execution
+of these simulations, in their post-processing and in the construction of the
+database, we kindly request the following:
+\begin{itemize}
+
+\item Publications making use of the \eagle data extracted from the public
+  database are kindly requested to cite the original papers introducing the project
+  \citep{Schaye2015,Crain2015} as well as this paper (McAlpine et al., 2015).
+
+\item Publications making use of the database should add the following line in
+  their acknowledgement section: ``\textit{We acknowledge the Virgo Consortium
+    for making their simulation data available. The \eagle simulations were
+    performed using the DiRAC-2 facility at Durham, managed by the ICC, and the
+    PRACE facility Curie based in France at TGCC, CEA, Bruy\`eres-le-Ch\^atel.}''.
+
+\item Furthermore, publications referring to specific aspects of the subgrid
+  models, hydrodynamics solver, or post-processing steps (such as the
+  construction of images or photometric quantities, and the construction of
+  merger trees), are kindly requested to not only cite the above papers, but
+  also the original papers describing these aspects. The appropriate references
+  can be found in section 2 of this paper and in \cite{Schaye2015}.
+
+\end{itemize}
+

@@ -1,0 +1,112 @@
+\section{Detailed expressions for quantities in the database}
+\label{appendix_cosmo}
+In order to remove any ambiguity in the quantities provided in the database, this appendix summarises the fundamental equations that are being solved and the co-ordinate system used in the numerical code. 
+
+The equations that describe the evolution of a gravitating fluid are the continuity, Euler, energy and Poisson equations \citep{Peebles1980}. In order to provide a precise definition of the symbols used to describe database entries, we write these equations as 
+\begin{eqnarray}
+\frac{\partial\rho}{\partial t} + ({\bf v}\cdot \nabla)\,\rho \equiv {{\rm d}\rho\over {\rm d}t}&=&-\rho\nabla\cdot {\bf v}\label{eq:cont}\\
+{{\rm d}{\bf v}\over {\rm d}t}&=&-\frac{1}{\rho}\nabla p-\nabla\Phi\label{eq:euler}\\
+{{\rm d}u\over {\rm d}t}&=& -{p\over \rho}\nabla\cdot{\bf v}
+-{\cal C}\rho\,\,\\
+\nabla^2\Phi  &=&4\pi G (\rho+\rho_{\rm col}) - \Lambda\,,
+\label{eq:CEP}
+\end{eqnarray}
+where $\rho$ is gas density, $\rho_{\rm col}$ the density due to collisionless matter (i.e., stars, dark matter and black holes), $p$ the effective gas pressure, $\Phi$ the (Newtonian) gravitational potential and $\Lambda$ the cosmological constant. The variable
+\begin{equation}
+u = {p\over (\gamma-1)\rho} = {k_{\rm B}T\over (\gamma-1)\,\mu m_{\rm H}}\,, 
+\label{eq:u}
+\end{equation}
+is the thermal energy per unit mass, with $\gamma=5/3$ the ratio of specific heats for a mono-atomic gas,
+and $\mu$ the mean molecular weight in units of the Hydrogen mass, $m_{\rm H}$. The term ${\cal C}(T)\,\rho$ describes radiative cooling and heating.
+The database also reports the value of the pseudo-entropy $S$, defined as
+\begin{equation}
+S \equiv {p\over\rho^\gamma}\,.
+\label{eq:S}
+\end{equation}
+
+We use the standard notation for proper time, $t$, position, ${\bf r}$, and velocity ${\bf v}\equiv {\rm d}{\bf r}/{\rm d}t\equiv \dot{\bf r}$. Partial derivatives are defined so that $\partial/\partial t$ is the time derivative at constant position ${\bf r}$,
+${\rm d}/{\rm d}t\equiv \partial/\partial t + ({\bf v}\cdot\nabla)$ is the Lagrangian time derivative, and the spatial derivative $\nabla\equiv \partial/\partial_{\bf r}$ is computed at constant time.
+
+We solve these equations in an expanding coordinates described by the scale factor $a(t)$ which satisfies the Friedmann equations,
+\begin{eqnarray}
+H^2 \equiv \left({{\dot a}\over a}\right)^2 &=& {8\pi {\rm G}\over 3}\bar\rho_t+ {\Lambda\over 3}\\
+\ddot a &=& -{4\pi {\rm G}\over 3}\bar\rho_t\,a + {\Lambda\over 3}a\,,
+\end{eqnarray}
+where $\Lambda\equiv 3H_0^2\Omega_\Lambda$ (with $H_0\equiv H(a=1)$), and $\bar\rho_t$ is the mean total density, $\bar\rho_t = \bar\rho + \bar\rho_{\rm col}$. We apply periodic boundary conditions in this expanding reference frame.
+
+The simulation uses comoving coordinates to simplify the integration of Eqs.~\ref{eq:cont}-\ref{eq:CEP}. These are defined as
+\begin{eqnarray}
+{\bf x}&\equiv & {{\bf r}\over a}\\
+\hat \rho &\equiv & a^3\,\rho\\
+\hat u &\equiv& a^{-2}u\\
+\hat\Phi &=& a\,(\Phi -{2\pi\over 3}{\rm G}\bar\rho_t r^2 + {1\over 6}\Lambda\,r^2)\\
+\hat\nabla &\equiv &a\,\nabla\\
+\hat p &=& (\gamma-1)\hat \rho\,\hat u\\
+\hat S &=& S\,.
+\label{eq:covar}
+\end{eqnarray}
+In these variables, the velocity
+\begin{eqnarray}
+{\bf v} &=& \dot a {\bf x} + {\bf v}_p\\
+{\bf v}_p & \equiv & a \dot{\bf x}\,,
+\label{eq:v_p}
+\end{eqnarray}
+where ${\bf v}_p$ is referred to as the peculiar velocity. We will use the term \lq comoving variable\rq\ when a quantity is expressed in comoving variables (i.e. ${\bf x}$, $\dot{\bf x}$ and hatted variables), and \lq physical\rq\ or \lq proper\rq\ otherwise. In particular we will express comoving distances in cMpc (for comoving mega parsecs) and physical distances in pMpc (for proper or physical mega parsecs), and similarly for ckpc and pkpc.
+
+The equations are solved by representing the collisionless mass as well as the gas by particles. We denote particle masses as $m_i$, for particle $i$. In {\sc Eagle}\,, star particles lose mass to gas particles to represent mass loss from stars. Each star particle therefore has two mass variables, its current particle mass, $m$, and its birth mass $\tilde m$:
+\begin{eqnarray}
+m &=& \hbox{current particle mass of star}\nonumber\\
+\tilde m&=&\hbox{birth mass of star}\,,
+\label{eq:m_star}
+\end{eqnarray}
+see \cite{Wiersma2009b} for more details. Black holes also have two mass variables associated with them, a particle mass $m$, and a subgrid mass $\tilde m$. It is the subgrid mass that enters the equations describing the accretion rate of a black hole. In short,
+\begin{eqnarray}
+m &=& \hbox{particle mass of black hole}\nonumber\\
+\tilde m&=&\hbox{subgrid mass of black hole}\,.
+\label{eq:m_bh}
+\end{eqnarray}
+Once a black hole is significantly more massive than the seed mass, particle and subgrid mass trace each other closely, see \cite{Booth_Schaye2009} and \cite{Guevara2013} for details.
+
+Having defined comoving variables, the comoving energy $\hat E$ of a collisionless halo is
+\begin{equation}
+\hat E = {1\over 2}\sum_i m_i (a^2\dot{\bf x}_i)^2 + {1\over 2} \sum_i {m_i\,\hat\Phi_i}\,,
+\end{equation}
+and is conserved for an isolated halo, as is its comoving spin $\hat{\bf L}$,
+\begin{equation}
+\hat{\bf L} = \sum_i m_i({\bf x}-{\bf x}_{\rm com})\times(a^2\dot{\bf x}_i-a^2{\dot{\bf x}}_{\rm com})\,.
+\label{eq:spin}
+\end{equation}
+Here 
+\begin{equation}
+{\bf x}_{\rm com}=\sum_i m_i{\bf x}_i/\sum_i m_i\,,
+\label{eq:com}
+\end{equation}
+is the comoving position of the centre of mass (taking into account periodic boundary conditions), and $\dot{\bf x}_{\rm com}$ its time derivative.
+
+The database uses comoving co-ordinates to record the locations of haloes and galaxies.
+For example, the position of the centre of a galaxy or halo (stored as {\tt CentreOfMass} in the database) is 
+\begin{equation}
+\hbox{\footnotesize CentreOfMass} = {\bf x}_{\rm com} = {\sum_i m_i\,{\bf x}_i\over \sum_i m_i}\,,
+\label{eq:CentreOfMass}
+\end{equation}
+where the sum runs over all particles that belong to the object taking into account periodic boundary conditions. Similarly, the centre of potential of an object (database variable {\tt CentreOfPotential}) is given in comoving coordinates.
+
+The velocity of a halo or galaxy (database variable {\tt Velocity}) refers to its peculiar velocity,
+\begin{equation}
+\hbox{\footnotesize Velocity} = a\,\dot{\bf x}_{\rm com} = a{\sum_i m_i\,\dot{\bf x}_i\over \sum_i m_i}\,.
+\label{eq:Velocity}
+\end{equation}
+
+All other variables are expressed in physical coordinates, for example the spin vector of a galaxy is computed as
+\begin{equation}
+\hbox{\footnotesize Spin} = {\sum_i m_i\,({\bf r}_i-{\bf r}_{\rm com})\times ({\bf v}_i-{\bf v}_{\rm com})\over \sum_i m_i}\,,
+\end{equation}
+where ${\bf r}_{\rm com}$ and ${\bf v}_{\rm com}$ are the physical position and velocity of the centre of mass.
+The expressions for physical kinetic, potential, thermal, and total energy are, respectively
+\begin{eqnarray}
+E_{\rm K} &=&{1\over 2}\sum_i\,m_i\,({\bf v}-{\bf v}_{\rm com})^2 \label{eq:KineticEnergy}\\
+E_{\Phi} &=&{1\over 2}\sum_i m_i{\hat\Phi_i\over a} \label{eq:PotentialEnergy}\\
+E_{\rm u} &=& \sum_i\,m_i\,(a^2\hat u_i) \label{eq:ThermalEnergy}\\
+E_{\rm tot} &=& E_{\rm K}+E_{\Phi}+E_{\rm u}\,. \label{eq:TotalEnergy}
+\end{eqnarray}
+

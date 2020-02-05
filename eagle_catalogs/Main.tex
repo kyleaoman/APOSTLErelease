@@ -1,0 +1,242 @@
+\documentclass[5p,authoryear]{elsarticle}
+
+\makeatletter
+\def\ps@pprintTitle{%
+ \let\@oddhead\@empty
+ \let\@evenhead\@empty
+ \def\@oddfoot{}%
+ \let\@evenfoot\@oddfoot}
+\makeatother
+
+
+%|------------------|
+%| Import packages. |
+%|------------------|
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{xspace}
+\usepackage{natbib}
+\usepackage{aas_macros}
+\usepackage{hyperref}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{placeins}
+
+%% \hypersetup{
+%%   pdfinfo={
+%%     Title={The EAGLE simulation: public data release},
+%%     Author={Stuart McAlpine},
+%%     Subject={},
+%%     Keywords={}
+%%   }
+%%   pdfcreator={},
+%%   pdfproducer={}
+%% }
+
+
+%|---------------------------------------------|
+%| Listings setup for python code and SQL code |
+%|---------------------------------------------|
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{8} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{8}  % for normal
+
+\usepackage{color}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{grey}{rgb}{0.4,0.4,0.4}
+
+\usepackage{listings}
+
+
+% style for python
+\newcommand\pythonstyle{\lstset{
+language=Python,
+basicstyle=\ttm,
+otherkeywords={self},             % Add keywords here
+keywordstyle=\ttb\color{deepblue},
+emph={MyClass,__init__},          % Custom highlighting
+emphstyle=\ttb\color{deepred},    % Custom highlighting style
+stringstyle=\color{deepgreen},
+frame=tb,                         % Any extra options here
+showstringspaces=false            % 
+}}
+
+\newcommand\pythonexternal[2][]{{
+\pythonstyle
+\lstinputlisting[#1]{#2}}}
+
+% style for sql
+\newcommand\sqlstyle{\lstset{
+language=SQL,
+showspaces=false,
+basicstyle=\ttfamily,
+numbers=left,
+numberstyle=\tiny,
+commentstyle=\color{grey},
+frame=single
+}}
+
+
+%|------------------|
+%| Custom Commands. |
+%|------------------|
+\newcommand{\eagle}{{\sc eagle}\xspace}
+\newcommand{\gadget}{{\sc gadget}\xspace}
+\newcommand{\subfind}{{\sc subfind}\xspace}
+\newcommand{\anarchy}{{\sc anarchy}\xspace}
+\newcommand{\dtrees}{{\sc D-Trees}\xspace}
+\newcommand{\squotes}[1]{\lq {#1}\rq\xspace}
+\newcommand{\dquotes}[1]{\lq\lq {#1}\rq\rq\xspace}
+\newcommand{\Msol}{\, \mathrm{M}_\odot}
+\newcommand{\HI}{${\rm H~I}$\xspace}
+\newcommand{\CIV}{${\rm C~IV}$\xspace}
+\newcommand{\OVI}{${\rm O~VI}$\xspace}
+\newcommand{\HaloID}{\GalaxyID}  %Legacy purposes
+\newcommand{\GalaxyID}{{\tt GalaxyID}\xspace}
+\newcommand{\TopLeafID}{{\tt TopLeafID}\xspace}
+\newcommand{\LastProgID}{{\tt LastProgID}\xspace}
+\newcommand{\DescendantID}{{\tt DescendantID}\xspace}
+\newcommand{\sql}{{\sc sql}\xspace}
+\newcommand{\dbAddress}{\url{http://www.eaglesim.org/database.php}}
+
+\hyphenation{data-base}
+
+%|-----------------|
+%| Begin document. |
+%|-----------------|
+\begin{document}
+\begin{frontmatter}
+
+\title{The \eagle simulations of galaxy formation: public release
+  of halo and galaxy catalogues\tnoteref{t1}}
+
+\author[durham]{Stuart McAlpine}
+\ead{s.r.mcalpine@durham.ac.uk}
+\author[durham]{John C. Helly}
+\ead{j.c.helly@durham.ac.uk}
+\author[durham]{Matthieu Schaller}
+\ead{matthieu.schaller@durham.ac.uk}
+\author[durham]{James W. Trayford}
+\author[durham]{Yan Qu}
+\author[durham]{Michelle Furlong}
+\author[durham]{Richard G. Bower}
+\author[liverpool]{Robert A. Crain}
+\author[leiden]{Joop Schaye}
+\author[durham]{Tom Theuns}
+\author[tenerife1,tenerife2]{Claudio Dalla Vecchia}
+\author[durham]{Carlos S. Frenk}
+\author[liverpool]{Ian G. McCarthy}
+\author[durham]{Adrian Jenkins}
+\author[chile]{Yetli Rosas-Guevara}
+\author[mpa]{Simon D. M. White}
+\author[gent]{Maarten Baes}
+\author[gent]{Peter Camps}
+\author[jhu]{Gerard Lemson}
+
+\address[durham]{Institute for Computational Cosmology, Department of Physics,
+  University of Durham, South Road, Durham, DH1 3LE, UK}
+
+\address[liverpool]{Astrophysics Research Institute, Liverpool John Moores
+  University, 146 Brownlow Hill, Liverpool L3 5RF, UK}
+
+\address[leiden]{Leiden Observatory, Leiden University, P.O. Box 9513, 2300 RA
+  Leiden, the Netherlands}
+
+\address[tenerife1]{Instituto de Astrof\'isica de Canarias, C/ V\'ia L\'actea
+  s/n, 38205 La Laguna, Tenerife, Spain}
+
+\address[tenerife2]{Departamento de Astrof\'isica, Universidad de La Laguna,
+  Av. del Astrof\'isico Francisco S\'anchez s/n, 38206 La Laguna, Tenerife,
+  Spain}
+
+\address[chile]{Departamento de Astronom\'ia, Universidad de Chile, Casilla
+  36-D, Las Condes, Santiago, Chile}
+
+\address[mpa]{Max-Planck-Institut fur Astrophysik, Karl-Schwarzschild-Str. 1,
+  D-85748 Garching, Germany}
+
+\address[gent]{Sterrenkundig Observatorium, Universiteit Gent,
+  Krijgslaan 281, B-9000 Gent, Belgium}
+
+\address[jhu]{Department of Physics \& Astronomy, Johns Hopkins
+  University, Baltimore, MD, 21218, USA}
+
+\tnotetext[t1]{\dbAddress}
+
+%|---------------|
+%| Introduction. |
+%|---------------|
+\input{Introduction.tex}
+
+%|-----------------------------|
+%| The EAGLE simulation suite. |
+%|-----------------------------|
+\input{EagleSimulationSuite.tex}
+
+%|---------------|
+%| Merger Trees. |
+%|---------------|
+\input{MergerTrees.tex}
+
+%|--------------------|
+%| Technical aspects. |
+%|--------------------|
+\input{TechnicalAspects.tex}
+
+%|-----------------------|
+%| Database Description. |
+%|-----------------------|
+\input{dBase.tex}
+
+%|------------------------|
+%| Querying the database. |
+%|------------------------|
+%\input{QueryingTheDatabase}
+
+%|----------|
+%| Caveats. |
+%|----------|
+\input{Caveats.tex}
+
+%|-------------|
+%| Conclusion. |
+%|-------------|
+\input{Conclusion.tex}
+
+%|--------------|
+%| Bibliography |
+%|--------------|
+\bibliographystyle{model2-names}
+\bibliography{./mybibfile}
+
+%|----------|
+%| Appendix |
+%|----------|
+\appendix
+
+%|----------------------------------|
+%| Example Scripts. Python and SQL. |
+%|----------------------------------|
+\input{ExampleScripts.tex}
+
+%|----------------------|
+%| Full table listings. |
+%|----------------------|
+\input{Appendix-Tables.tex}
+
+%|---------------------------|
+%| List of snapshot outputs. |
+%|---------------------------|
+\input{Appendix-SnapList.tex}
+
+\normalsize
+%|-----------------------------|
+%| Cosmological hydrodynamics. |
+%|-----------------------------|
+\input{Appendix-cosmo}
+
+
+\end{document}

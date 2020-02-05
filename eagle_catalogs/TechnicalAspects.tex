@@ -1,0 +1,74 @@
+
+%|-------------------------------------------------------|
+%| Description of database server and technical aspects. |
+%|-------------------------------------------------------|
+\subsection{Technical aspects and infrastructure}
+\label{subsection:technical_aspects}
+
+Multiple layouts and frameworks are available for storing large datasets (such
+as \textsc{MongoDB}\footnote{\url{https://www.mongodb.org/}},
+\textsc{SciDB}\footnote{\url{http://www.paradigm4.com/}},
+\textsc{Hadoop}\footnote{\url{http://hadoop.apache.org/}}, ...) each coming with
+advantages and shortcomings. In the case of galaxy catalogues extracted from
+cosmological simulations, the \textit{Millennium simulation} used an \sql
+database for its public release and the wider astronomy community has since
+developed a familiarity with its structure and way to query the data. To allow
+users the simplest transition between databases, we have adopted the same
+framework and a similar table design as the \textit{Millennium simulation} \sql
+database \citep{Lemson2006b}. More efficient ways of querying the data could
+exist, with differing database formats or table structures, however we decided
+that maintaining the familiar aspects of previous databases outweighs the
+potential performance gains.
+
+The server hosting the front end web interface operates on Centos linux, running
+\textsc{Apache Tomcat 6.0.24}. This server interfaces with the database host,
+submitting queries and having their results streamed via a Java web application
+(originally written for the \textit{Millennium simulation}). The database itself
+is stored on a single physical Windows Server 2008 system with 128~GB of ram,
+80~TB of disk storage and two Xeon E5-2670 CPUs which runs Microsoft SQL Server
+2012. The main table for the largest simulation contains 65,996,151 rows, which
+corresponds to $\approx300~\rm{GBytes}$ of disk space.
+
+Columns are indexed on disk as follows (see below for the description of the
+content of each table):
+
+\begin{enumerate}
+
+\item The \textbf{SubHalo} and \textbf{Sizes} tables have a clustered index on
+  the \GalaxyID. This allows joins between the tables and queries for
+  progenitors and descendants to run efficiently. \GalaxyID rows are assigned
+  such that progenitors of each galaxy have a continuous range of \GalaxyID.
+
+\item The \textbf{SubHalo} tables have an additional index on (\texttt{Snapnum},
+  \GalaxyID) due to the common nature of queries that request a particular time
+  in the simulation.
+
+\item The \textbf{Aperture} tables have a clustered index on the combination of
+  (\GalaxyID, \texttt{ApertureSize}) and \\(\texttt{ApertureSize}, \GalaxyID) to
+  aid queries searching for all information about a single galaxy or one
+  aperture size for many galaxies respectively.
+
+\item The \textbf{FOF} tables are clustered on the combination
+  (\texttt{SnapNum}, \texttt{GroupID}), which uniquely identifies the FoF group
+  and can be used to join to the \textbf{SubHalo} table.
+
+\end{enumerate}
+
+Typical queries (such as the ones given as examples in
+Sec.~\ref{database_usage}) take a few milliseconds to complete on the
+server.  More complex queries (i.e. joining multiple tables or
+navigating the merger trees for multiple galaxies at the same time)
+can take up to a few seconds. As the usage goes up, additional
+indexing of the columns could be added to improve the performance of
+common, more complex, queries.
+
+The mock \emph{gri} images have been processed once for the entire simulation
+and are stored on a separate server. When querying images, the \sql server
+generates valid HTML tags containing the links to the images. No caching has
+been put in place but such facility could easily be added in case of large
+demand.
+
+
+
+
+

@@ -1,0 +1,586 @@
+\onecolumn
+\section{Description of all fields contained in the database}
+\label{appendix_quantities}
+%|----------------|
+%| SubHalo Table. |
+%|----------------|
+
+% reset table counter
+\setcounter{table}{0}
+\renewcommand\thetable{\Alph{section}.\arabic{table}}
+\begin{table*}[h]
+\caption{Full listing of the content of the main galaxy properties table and
+  description of the columns. These properties are contained in tables denoted
+  {\bf [modelname]\_SubHalo}. The first five lines of the table give the
+  indices used to navigate between the side tables and through the merger
+  trees. Particle types are dark matter, gas, stars and black holes and
+  collective properties such as Mass sum over all of these particles unless otherwise stated. }
+\label{table:subhalo1}
+\begin{center}
+\footnotesize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ >{\ttfamily}p{4cm}p{1.5cm}p{11cm}}
+{\large \bf SubHalo} & & \\
+\hline
+\normalfont Field & Units & Description \\
+\hline\hline
+GalaxyID &
+- &
+Unique identifier of a galaxy. This identifier enables linking the {\bf
+  SubHalo} table to the {\bf Aperture}, {\bf Magnitudes} and {\bf Sizes} tables.\\
+
+LastProgID & - & Used for merger tree traversal, Section~\ref{subsection:merger_trees}. \\
+
+TopLeafID & - & Used for merger tree traversal, Section~\ref{subsection:merger_trees}.\\
+
+DescendantID & - & \GalaxyID of the descendant of this galaxy, Section~\ref{subsection:merger_trees}.\\
+
+\hline
+
+GroupID & - & Unique identifier of the FoF halo hosting this galaxy. This identifier enables linking 
+the {\bf SubHalo} table to the {\bf FOF} table.\\
+
+\hline
+
+Redshift & - & Redshift at which these properties are computed. \\
+
+Snapnum & - & Snapshot number at which these properties are computed. \\
+
+\hline
+
+GroupNumber & - & Integer identifier of the FoF halo hosting this galaxy. GroupNumber
+is only unique to a given snapshot and hence cannot be used to identify the
+same halo across multiple snapshots.\\
+
+SubGroupNumber & - & Integer identifier of this galaxy within its FoF halo. SubGroupNumber is only unique to a given FoF halo in a given snapshot and hence cannot be used to identify the same galaxy across multiple outputs. The condition ``{\tt   SubGroupNumber}$~=~0$'' selects central galaxies.\\ 
+
+\hline
+
+Spurious & - & Value is $1$ if the galaxy is an artefact of
+the \subfind algorithm and $0$ if the galaxy is a genuine object, see Section~\ref{caveats}.\\
+
+\hline
+
+Image\_face &  & \\
+Image\_edge & - & \\
+Image\_box &  & \multirow{-3}{11cm}{Weblink to the mock $gri$
+image of the galaxy in the three different orientations (face-on, edge-on and along the simulation $z$-axis). When querying the database via the browser, the image appears in the column of the results table. } \\
+
+\hline
+
+BlackHoleMass &
+M$_\odot$ &
+Sum of all the black hole subgrid masses in this galaxy. See Eq.~(\ref{eq:m_bh}) for a description of the subgrid mass $\tilde m$ of a black hole, and Section~\ref{caveats} for cautions using black hole masses. \\
+
+BlackHoleMassAccretionRate &
+M$_\odot$~yr$^{-1}$ &
+Total instantaneous accretion rate of all black holes, see Section~\ref{caveats} for cautions. \\
+
+CentreOfMass\_x & &\\
+CentreOfMass\_y & cMpc &\\
+CentreOfMass\_z & & \multirow{-3}{11cm}{Co-moving position of the centre of mass, Eq.~(\ref{eq:CentreOfMass}).} \\
+
+CentreOfPotential\_x & &\\
+CentreOfPotential\_y & cMpc &\\
+CentreOfPotential\_z & & \multirow{-3}{11cm}{Co-moving position of the minimum of the gravitational potential defined by the position of the most bound particle.} \\
+
+\hline
+ 
+\end{tabular}
+\end{center}
+\end{table*}
+
+%|------------------|
+%| SubHalo Table 2. |
+%|------------------|
+% table continued - so reset counter again
+\setcounter{table}{0}
+\renewcommand\thetable{\Alph{section}.\arabic{table}}
+\begin{table*}
+\caption{ -- continued}
+\label{table:subhalo2}
+\begin{center}
+\footnotesize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ >{\ttfamily}p{4cm}p{1.5cm}p{11cm}}
+{\large \bf SubHalo} & & \\
+\hline
+\normalfont Field & Units & Description \\
+\hline\hline
+
+
+GasSpin\_x & & \\
+GasSpin\_y & pkpc~km~s$^{-1}$ & \\
+GasSpin\_z & & \multirow{-3}{11cm}{Spin per unit mass of all gas particles, ${\bf L}/M$, with ${\bf L}$ given by Eq.~(\ref{eq:spin}).}\\
+
+HalfMassRad\_DM &
+pkpc &
+Physical radius enclosing half of the dark matter mass.\\
+
+HalfMassRad\_Gas &
+pkpc &
+Physical radius enclosing half of the gas mass.\\
+
+HalfMassRad\_Star &
+pkpc &
+Physical radius enclosing half of the stellar mass.\\
+
+HalfMassRad\_BH &
+pkpc &
+Physical radius enclosing half of the black hole particle mass, $m$, as defined in Eq.~(\ref{eq:m_bh}). \\
+
+HalfMassProjRad\_DM &
+pkpc &
+Projected physical radius enclosing half of the dark matter mass, averaged over three orthogonal projections.\\
+
+HalfMassProjRad\_Gas &
+pkpc &
+Projected physical radius enclosing half of the gas mass, averaged over three orthogonal projections.\\
+
+HalfMassProjRad\_Star &
+pkpc &
+Projected physical radius enclosing half of the stellar mass, averaged over three orthogonal projections.\\
+
+HalfMassProjRad\_BH &
+pkpc &
+Projected physical radius enclosing half of the black hole particle mass, $m$ (Eq.~\ref{eq:m_bh}), averaged over three orthogonal projections.\\
+
+InitialMassWeightedBirthZ &
+z &
+Mean redshift of formation of stars, weighted by birth mass $\tilde m$ (Eq.\ref{eq:m_star}). Calculated via $\sum_i \tilde {m}_{i} \tilde z_i / \sum_i \tilde {m}_{i}$ where $\tilde z_i$ is the redshift
+the star particle $i$ was formed and $\tilde m_i$ its birth mass.\\
+
+InitialMassWeightedStellarAge &
+Gyr &
+Mean age of stars, weighted by birth mass. Calculated via $\sum_i \tilde {m}_{i} (t - \tilde t_i) / \sum_i \tilde {m}_{i}$ where $t$ is cosmic time, and $\tilde t_i$ and $\tilde m_i$ formation time and birth mass of the star particle $i$, respectively.\\
+
+KineticEnergy &
+M$_{\odot}$~(km/s)$^{2}$ &
+Total kinetic energy $E_K$, Eq.(\ref{eq:KineticEnergy}).\\
+
+Mass &
+M$_\odot$ &
+Total current mass of all particles (i.e. $\sum_i m_i$ where $m_{i}$ is the mass of the particle).\\
+
+MassType\_DM &
+M$_\odot$ &
+Total dark matter mass. \\
+
+MassType\_Gas &
+M$_\odot$ &
+Total gas mass. \\
+
+MassType\_Star &
+M$_\odot$ &
+Total stellar mass, $\sum_i m_i$, where $m_i$ is the stellar particle mass from Eq.~(\ref{eq:m_star}).\\
+
+MassType\_BH &
+M$_\odot$ &
+Total black hole mass, $\sum_i m_i$, where $m_i$ is the black hole particle mass from Eq.~(\ref{eq:m_bh}).\\
+
+RandomNumber &
+- &
+Random number uniform in the range $[0,1)$. \\
+
+StarFormationRate &
+M$_\odot$~yr$^{-1}$ &
+Total star formation rate, $\sum_i \dot m_{\star, i}$, where $\dot m_{\star, i}$ is the star formation rate of gas particle $i$. \\
+
+StellarInitialMass &
+M$_\odot$ &
+Sum of birth masses of all stars, $\sum_i \tilde{m}_{i}$, where $\tilde {m}_{i}$ is the birth mass of star particle $i$ from Eq.~(\ref{eq:m_star}).\\
+
+StellarVelDisp &
+km~s$^{-1}$ &
+One dimensional velocity dispersion of stars, $((2\,\texttt{Star\_KineticEnergy})/(3\,\texttt{MassType\_Star}))^{1/2}$, where
+${\tt Star\_KineticEnergy}$ is the kinetic energy of stars.\\
+
+ThermalEnergy &
+M$_\odot$~(km/s)$^{2}$ &
+Total thermal energy $E_u$, Eq.~(\ref{eq:ThermalEnergy}).\\
+
+TotalEnergy &
+M$_\odot$~(km/s)$^{2}$ & 
+Total energy $E_{\rm tot}$, Eq.~(\ref{eq:TotalEnergy}).\\
+
+Velocity\_x & & \\
+Velocity\_y & km~s$^{-1}$ & \\
+Velocity\_z & & \multirow{-3}{11cm}{Peculiar velocity, Eq.~(\ref{eq:Velocity}).}\\
+
+Vmax &
+km~s$^{-1}$ & Maximum value of the circular velocity, $(G(M(<r)/r))^{1/2}$, where $M(<r)$ is the total mass enclosed in a sphere of physical radius $r$.\\
+
+VmaxRadius &
+pkpc &
+Physical radius where the circular velocity equals \texttt{Vmax}.\\
+
+\hline
+
+\end{tabular}
+\end{center}
+\end{table*}
+
+%|------------------|
+%| SubHalo Table 3. |
+%|------------------|
+% table continued - reset counter
+\setcounter{table}{0}
+\renewcommand\thetable{\Alph{section}.\arabic{table}}
+\begin{table*}
+\caption{ -- continued. Columns in this table exist for each of three different components:
+star-forming gas ({\tt SF}), non-star-forming gas ({\tt NSF}) and
+stars ({\tt Stars}). As these properties are repeated for each of these components,
+we only describe them once. In the database each property will be preceded with
+either {\tt [SF/NSF/Stars]\_} before its name. For instance, the metallicity
+field will exist in three variants: {\tt SF\_Metallicity}, {\tt NSF\_Metallicity}
+and {\tt Stars\_Metallicity} for the metallicity of the star-forming gas, of the
+non star-forming gas and of the stars, respectively. Any sum used to describe a property is the sum of all particles for that component only. }
+\label{table:subhalo3}
+\begin{center}
+\footnotesize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ >{\ttfamily}p{4cm}p{1.5cm}p{11cm}}
+{\large \bf SubHalo} & & \\
+\hline
+\normalfont Field & Units & Description \\
+\hline\hline
+
+Hydrogen & - & \\
+Helium & - & \\
+Carbon & - & \\
+Nitrogen & - & \\
+Oxygen & - & \\
+Neon & - & \\
+Magnesium & - & \\
+Silicon & - & \\
+Sulphur & - & \\
+Calcium & - & \\
+Iron & - & \multirow{-11}{11cm}{Total mass in this element divided by the total mass (both for a given component). These are therefore absolute abundances which do not depend on the solar abundance.} \\
+
+IronFromSNIa &
+- &
+Total mass in {\tt Iron} contributed by ejecta from Type Ia supernovae, divided by the total mass.\\
+
+KineticEnergy &
+M$_{\odot}$~(km/s)$^{2}$ &
+Total kinetic energy $E_K$, Eq.~(\ref{eq:KineticEnergy}).\\
+
+Mass &
+M$_{\odot}$ &
+Total mass, $\sum_i m_i$, where $m_i$ is the particle mass.\\
+
+MassFromAGB &
+M$_{\odot}$ &
+Total mass contributed by ejecta of AGB stars.\\
+
+MassFromSNII &
+M$_{\odot}$ & 
+Total mass contributed by ejecta from massive stars and type II supernovae.\\
+
+MassFromSNIa &
+M$_{\odot}$ & 
+Total mass contributed by ejecta from type Ia SN supernovae. \\
+
+MassWeightedEntropy &
+km~s$^{2}$~$(\frac{10^{10} \Msol}{\rm Mpc})^\frac{2}{3}$ &
+~~~~~~Mass-weighted pseudo entropy of all particles, $\sum_i m_i S_i / \sum_i m_i$, where $S_{i}$ is the pseudo-entropy (Eq.~\ref{eq:S}) and $m_{i}$ is the mass of the particle $i$. (Entry present for gas components only.)\\
+
+MassWeightedTemperature &
+K &
+Mass-weighted temperature, $\sum_i m_i \mathrm{T}_{i} / \sum_i m_{i}$, where $\mathrm{T}_{i}$ is the temperature and $m_{i}$ is the mass of the particle $i$. (Entry present for gas components only.)\\
+
+Metallicity &
+- & 
+Metal mass fraction, $\sum_i m_i Z_i / \sum_i m_i$, where $Z_{i}$ is the metallicity and $m_{i}$ is the mass of the particle $i$. \\
+
+MetalsFromAGB &
+M$_\odot$ & 
+Total metal mass contributed by ejecta from AGB stars. \\
+
+MetalsFromSNII &
+M$_\odot$ & 
+Total metal mass contributed by ejecta from massive stars and SN Type II supernovae.\\
+
+MetalsFromSNIa &
+M$_\odot$ & 
+Total metal mass contributed by ejecta from Type Ia supernovae.\\
+
+Spin\_x & & \\
+Spin\_y & pkpc~km~s$^{-1}$ &  \\
+Spin\_z & & \multirow{-3}{11cm}{Spin per unit mass, ${\bf L}/M$, from Eq.~(\ref{eq:spin}).}\\
+
+ThermalEnergy & 
+M$_\odot$~(km/s)$^{2}$ &
+Total thermal energy $E_u$, Eq.~(\ref{eq:ThermalEnergy}). (Entry present for gas components only.)\\
+
+TotalEnergy & 
+M$_\odot$~(km/s)$^{2}$ &
+Total energy $E_{\rm tot}$, Eq.~(\ref{eq:TotalEnergy}). The potential energy contribution does include the other components as well, $E_{\Phi}={1\over 2}\sum_i m_i{\hat\Phi_i\over a}$.\\
+
+\hline 
+
+\end{tabular}
+\end{center}
+\end{table*}
+
+%|------------|
+%| FOF Table. |
+%|------------|
+\begin{table*}
+\caption{Full listing of the content of the halo table and description of
+  the columns. These properties are contained in tables denoted {\bf
+    [modelname]\_FOF}. This table can be linked to the {\bf
+    [modelname]\_SubHalo} table using the unique {\tt GroupID}
+    identifier.}
+\label{table:fof}
+\begin{center}
+\footnotesize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ >{\ttfamily}p{4cm}p{1.5cm}p{11cm}}
+{\large \bf FOF} & & \\
+\hline
+\normalfont Field & Units & Description \\
+\hline\hline
+
+GroupID &
+- &
+Unique identifier of a halo (i.e. a FoF group). This identifier enables linking a halo
+to all its galaxies and their properties in the {\bf SubHalo} table.\\
+
+\hline
+
+Redshift & - & Redshift at which these properties are computed. \\
+
+SnapNum & - & Snapshot number containing that halo. \\
+
+\hline
+
+GroupCentreOfPotential\_x &
+ & \\
+GroupCentreOfPotential\_y &
+cMpc & \\
+GroupCentreOfPotential\_z & & \multirow{-3}*{Co-moving position of the minimum of the gravitational potential of the halo.}\\
+
+GroupMass &
+M$_{\odot}$ &
+Total Friends-of-Friends mass of this halo. \\
+
+Group\_M\_Crit200  \\
+
+Group\_M\_Crit500  &  M$_{\odot}$ \\
+
+Group\_M\_Crit2500 & & \multirow{-3}{11cm}{Total mass within the corresponding {\tt Group\_R\_Critxxx} radius, where xxx=200, 500 or 2500, respectively} \\
+
+
+Group\_M\_Mean200 \\ 
+Group\_M\_Mean500 & M$_{\odot}$ \\
+Group\_M\_Mean2500 & & \multirow{-3}{11cm}{Total mass within the corresponding {\tt Group\_R\_Meanxxx} radius, where xxx=200, 500 or 2500, respectively} \\
+
+
+Group\_M\_TopHat200 &
+M$_{\odot}$ &
+Total mass within radius {\tt Group\_R\_Tophat200}. \\
+
+Group\_R\_Crit200 \\
+Group\_R\_Crit500 & pkpc \\
+Group\_R\_Crit2500 & & \multirow{-3}{11cm}{Physical radius within which the mean density is xxx times the \emph{critical} density of the Universe, where xxx=200, 500 or 2500, respectively}.\\
+
+Group\_R\_Mean200\\
+Group\_R\_Mean500 & pkpc \\
+Group\_R\_Mean2500 & & \multirow{-3}{11cm}{Physical radius within which the mean density is xxx times the \emph{mean} density of the Universe, where xxx=200, 500 or 2500, respectively}.\\
+
+Group\_R\_TopHat200 &
+pkpc &
+Physical radius within which the mean density is $18\pi^{2} + 82
+(\Omega_{m}(z)-1)-39 (\Omega_{m}(z)-1)^{2}$ times the critical density of the Universe. This is based on 
+the spherical top-hat collapse model of \citep{Bryan1998}.\\
+
+NumOfSubhalos &
+- &
+Number of subhaloes (galaxies) identified as belonging to this halo. \\
+
+RandomNumber &
+- &
+Random number uniform in the range $[0,1)$. \\
+\hline
+\end{tabular}
+\end{center}
+\end{table*}
+
+%|--------------|
+%| Sizes Table. |
+%|--------------|
+\begin{table*}
+\caption{Full listing of the content of the galaxy sizes table and description of
+  the columns. These properties are contained in tables denoted {\bf
+    [modelname]\_Sizes}. This table contains half-mass sizes of
+    the {\em stellar} component of galaxies using spherical apertures (Furlong et al. (\textit{in prep.}). The \GalaxyID column can be
+    used to join this table to the corresponding {\bf
+    [modelname]\_SubHalo} table. Only galaxies with total stellar mass $M_*>10^8\Msol$
+    have entries in this table. }
+\label{table:sizes}
+\begin{center}
+\footnotesize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ >{\ttfamily}p{4cm}p{1.5cm}p{11cm}}
+{\large \bf Sizes} & & \\
+\hline
+\normalfont Field & Units & Description \\
+\hline\hline
+
+GalaxyID &
+- &
+Unique identifier of a galaxy as per {\bf SubHalo} table. \\
+
+\hline
+
+R\_halfmass30 &
+pkpc &
+Half mass radius of stellar component within a spherical (3D) 30~pkpc aperture.\\
+
+R\_halfmass100 &
+pkpc &
+Half mass radius of stellar component within a spherical (3D) 100 pkpc aperture.\\
+
+R\_halfmass30\_projected &
+pkpc &
+Projected half mass radius of stellar component within a circular (2D) 30~pkpc aperture
+(averaged over three orthogonal projections).\\
+
+R\_halfmass100\_projected & pkpc & Projected half mass radius of stellar component within a circular
+(2D) 100~pkpc aperture (averaged over three orthogonal
+projections).\\
+\hline
+
+\end{tabular}
+\end{center}
+\end{table*}
+
+
+
+
+
+
+%|-----------------|
+%| Aperture Table. |
+%|-----------------|
+\begin{table*}
+\caption{Full listing of the content of the aperture table and description of
+  the columns. These properties are contained in tables denoted {\bf
+    [modelname]\_Aperture}. This table contains measurements within spherical
+  apertures centred on the minimum of the gravitational potential of a given galaxy. Each row
+  represents a set of measurements for a single galaxy using a single aperture
+  size in physical kpc. The \GalaxyID column can be used to join this table to
+  the corresponding {\bf [modelname]\_SubHalo} table.}
+\label{table:aperture}
+
+\begin{center}
+\footnotesize
+
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ >{\ttfamily}p{4cm}p{1.5cm}p{11cm}}
+{\large \bf Aperture} & & \\
+\hline
+\normalfont Field & Units & Description \\
+\hline\hline
+
+GalaxyID &
+- &
+Unique identifier of a galaxy as per {\bf SubHalo} table.\\
+
+\hline
+
+ApertureSize &
+pkpc &	
+Spherical (3D) aperture radius used for this measurement. Quantities are measure in a sphere centred at the centre of the potential, {\em i.e.} at the location of the most bound particle. Available aperture sizes are: 1, 3, 5, 10, 20, 30, 40, 50, 70 and 100~pkpc. \\
+
+VelDisp &
+km~s$^{-1}$ &
+One dimensional velocity dispersion of stars, $((2\,\textrm{KineticEnergy\_Star})/(3\,\textrm{Mass\_Star}))^{1/2}$, where ${\rm KineticEnergy\_Star}$ is the kinetic energy of stars, and the sum is over stars within the aperture.\\
+
+SFR &
+M$_{\odot}$~yr$^{-1}$ &
+Star formation rate within the aperture. \\
+
+Mass\_BH &
+M$_{\odot}$ &	
+Total particle mass, $\sum_i m_i$ (Eq.~\ref{eq:m_bh}), of all black holes within the aperture. \\
+
+Mass\_DM &
+M$_{\odot}$ &	
+Total dark matter mass within the aperture. \\
+
+Mass\_Gas &
+M$_{\odot}$ &	
+Total gas mass within the aperture. \\
+
+Mass\_Star &
+M$_{\odot}$ &	
+Total stellar mass, $\sum_i m_i$ (Eq.~\ref{eq:m_star}), within the aperture. \\
+
+\hline
+\end{tabular}
+\end{center}
+\end{table*}
+
+
+
+
+
+
+
+
+%|-----------------|
+%| Magnitude Table.|
+%|-----------------|
+\begin{table*}
+\caption{Full listing of the content of the magnitudes table and description of
+  the columns. These properties are contained in tables denoted {\bf
+    [modelname]\_Magnitudes}. This table contains absolute rest-frame magnitudes without dust
+    attenuation for all galaxies with $M_*>10^{8.5}\Msol$ contained in the {\bf
+    SubHalo} table. This table can be joined to the {\bf SubHalo} table using
+    the \GalaxyID field. The magnitudes in the different
+    SDSS \citep{SDSSfilters} and UKIRT \citep{UKIRTfilters} filters have been
+    computed in 30~pkpc spherical apertures following the procedure described
+    by \citet{Trayford2015}.}
+\label{table:magnitudes}
+\begin{center}
+\footnotesize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ >{\ttfamily}p{4cm}p{1.5cm}p{11cm}}
+{\large \bf Magnitudes} & & \\
+\hline
+\normalfont Field & Units & Description \\
+\hline\hline
+
+GalaxyID &
+- &
+Unique identifier of a galaxy as per {\bf SubHalo} table.\\
+
+\hline
+u\_nodust & mag & Rest-frame absolute magnitude (AB) in the $u$ band without dust
+attenuation. \\
+g\_nodust & mag & Rest-frame absolute magnitude (AB) in the $g$ band without dust
+attenuation. \\
+r\_nodust & mag & Rest-frame absolute magnitude (AB) in the $r$ band without dust
+attenuation. \\
+i\_nodust & mag & Rest-frame absolute magnitude (AB) in the $i$ band without dust
+attenuation. \\ 
+z\_nodust & mag & Rest-frame absolute magnitude (AB) in the $z$ band without dust
+attenuation. \\ 
+Y\_nodust & mag & Rest-frame absolute magnitude (AB) in the $Y$ band without dust
+attenuation. \\ 
+J\_nodust & mag & Rest-frame absolute magnitude (AB) in the $J$ band without dust
+attenuation. \\ 
+H\_nodust & mag & Rest-frame absolute magnitude (AB) in the $H$ band without dust
+attenuation. \\ 
+K\_nodust & mag & Rest-frame absolute magnitude (AB) in the $K$ band without dust
+attenuation. \\ 
+\hline
+
+\end{tabular}
+\end{center}
+\end{table*}
+
+
+\twocolumn
