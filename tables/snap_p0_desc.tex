@@ -1,0 +1,155 @@
+\begin{tabular}{>{\ttfamily}p{4cm}p{1.5cm}p{11cm}}
+\multicolumn{3}{l}{\large \bf PartType0: Gas} \\
+\hline
+Field & Equation/Par & Description \\ \hline\hline
+
+AExpMaximumTemperature &
+\S\ref{SecThermo} &
+Expansion factor when particle had maximum temperature. \\
+
+Coordinates &
+Eq.~(\ref{EqCoords}) &
+\coordinates \\
+
+Density &
+Eq.~(\ref{EqRho}) &
+Co-moving density. \\
+
+ElementAbundance &
+\S\ref{SecAbundances} &
+Mass of [Carbon, Helium, Hydrogen, Iron, Magnesium, Neon, Nitrogen, Oxygen, Silicon] divided by particle mass. \\
+
+Entropy &
+\S\ref{SecThermo} &
+Particle entropy. \\
+
+GroupNumber & \S\ref{SecFOF} & \groupnumber \\
+
+HostHalo\_TVir\_Mass &
+- &
+Estimate of host FoF group's virial temperature, calculated from the local velocity dispersion. \\
+
+InternalEnergy &
+Eq.~(\ref{EqU}) &
+Thermal energy per unit mass. \\
+
+IronMassFracFromSNIa &
+\S\ref{SecAbundances} &
+Mass of Iron from SNIa divided by particle mass. \\
+
+Masses &
+\S\ref{SecParticles} &
+This variable was called `\texttt{Mass}' in \eagle. Particle mass.\\
+
+MaximumTemperature &
+S\ref{SecThermo} &
+Maximum temperature ever reached by particle. \\
+
+MetalMassFracFromAGB &
+\S\ref{SecAbundances} &
+Mass of metals received from AGB divided by particle mass. \\
+
+MetalMassFracFromSNII &
+\S\ref{SecAbundances} &
+Mass of metals received from SNII divided by particle mass. \\
+
+MetalMassFracFromSNIa &
+\S\ref{SecAbundances} &
+Mass of metals received from SNIa divided by particle mass. \\
+
+Metallicity &
+\S\ref{SecAbundances} & Mass of elements heavier than Helium, including
+those not tracked individually, divided by particle mass\\
+
+ParticleIDs &
+\S\ref{SecParticles} & Unique particle identifier. Index encodes the particles position in the
+initial conditions (see Appendix of \cite{2015MNRAS.446..521S} for details). \\
+
+SfFlag &
+\S\ref{SecSFR} & This variable was called `\texttt{OnEquationOfState}' in \eagle. 0 if particle has never been star-forming, +ve if currently star-forming,
+-ve if not currently star-forming. Value indicates scale factor at which it
+obtained its current state. Note this does not ensure the gas particle is on
+the equation of state for +ve values, as gas particles can yield non-zero star
+formation rates  up to 0.5~dex above the equation of state. \\
+
+SmoothedElementAbundance &
+\S\ref{SecAbundances}  & SPH kernel weighted ElementAbundance (see Section 2.2 of \cite{2005MNRAS.364.1105S} for
+the description of kernel weighted properties in SPH). \\
+
+SmoothedIronMassFracFromSNIa &
+\S\ref{SecAbundances}  & SPH kernel weighted IronMassFracFromSNIa. \\
+
+SmoothedMetallicity &
+\S\ref{SecAbundances}  &
+SPH kernel weighted Metallicity. \\
+
+SmoothingLength &
+\S\ref{SecParticles} &
+Co-moving SPH smoothing kernel. \\
+
+StarFormationRate &
+Eq.~(\ref{EqSFLaw}) &
+Instantaneous star formation rate. \\
+
+SubGroupNumber &
+\S\ref{SecFOF} & \subgroupnumber \\
+
+Temperature &
+\S\ref{SecThermo} &
+Temperature \\
+
+TotalMassFromAGB &
+\S\ref{SecAbundances} &
+Total mass received from AGB. \\
+
+TotalMassFromSNII &
+\S\ref{SecAbundances} &
+Total mass received from SNII. \\
+
+TotalMassFromSNIa &
+\S\ref{SecAbundances} &
+Total mass received from SNIa. \\
+
+Velocities &
+S\ref{SecParticles} &
+\velocity \\
+
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}
+\label{TabDM}
+\caption{Description and equation, where applicable, for each property of dark matter
+(PartType1) particles.}
+\begin{center}
+\footnotesize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{>{\ttfamily}p{4cm}p{1.5cm}p{11cm}}
+\multicolumn{3}{l}{\large \bf PartType1: Dark Matter} \\
+\hline
+Field & Equation/Par & Description \\ \hline\hline
+
+Coordinates &
+\S\ref{SecParticles} &
+\coordinates \\
+
+GroupNumber &
+\S\ref{SecFOF} &
+\groupnumber \\
+
+ParticleIDs &
+\S\ref{SecFOF} & Unique particle identifier. Index encodes the particles position in the
+initial conditions (see \cite{2015MNRAS.446..521S} for details). \\
+
+SubGroupNumber &
+\S\ref{SecFOF} &
+\subgroupnumber \\
+
+Velocities &
+\S\ref{SecParticles} &
+\velocity \\
+
+\hline
+\end{tabular}

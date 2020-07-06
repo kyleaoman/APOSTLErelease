@@ -1,0 +1,27 @@
+\begin{tabular}{>{\ttfamily}p{4cm}p{3cm}p{9.5cm}}
+\hline
+Name & Type & Description \\
+\hline
+snap\_127\_z000p000.0.hdf5 & HDF5 FILE & single file of snapshot 127 ($z=0$) \\
+\hline
+Config & HDF5 GROUP & Configuration parameters for the GADGET code, and svn subversion revision number \\
+Constants & HDF5 GROUP & Numerical values for physical constants used in the run \\
+HashTable & HDF5 GROUP & Contains information needed to identify particles in hash cells \\
+Header & HDF5 GROUP & \gadget\ header, including Hubble parameter $h$ and expansion factor $a$ \\
+Parameters & HDF5 GROUP & Initial and solar abundances of all chemical elements tracked \\
+PartType0 & HDF5 GROUP & Gas particle data \\
+PartType1 & HDF5 GROUP & Dark matter particle data  \\
+PartType2 & HDF5 GROUP & Boundary particle data \\
+PartType3 & HDF5 GROUP & Boundary particle data \\
+PartType4 & HDF5 GROUP & Star particle data \\
+PartType5 & HDF5 GROUP & Black hole particle data \\
+RuntimePars & HDF5 GROUP & Input parameters for this run \\
+Units & HDF5 GROUP & Units of length, mass, time, and those derived from it, in cgs units \\
+\hline
+CGSConversionFactor & HDF5 ATTRIBUTE & Multiplier to convert a variable into cgs units \\
+VarDescription & HDF5 ATTRIBUTE & Text description of variable \\
+aexp-scale-exponent & HDF5 ATTRIBUTE & Physical quantity is $a^{\rm aexp-scale-exponent}$ times variable \\
+h-scale-exponent & HDF5 ATTRIBUTE & Physical quantity is $h^{\rm h-scale-exponent}$ times variable \\
+\hline
+
+\end{tabular}

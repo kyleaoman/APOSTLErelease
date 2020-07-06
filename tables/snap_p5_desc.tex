@@ -1,0 +1,101 @@
+\begin{tabular}{>{\ttfamily}p{4cm}p{1.5cm}p{11cm}}
+\multicolumn{3}{l}{\large \bf PartType5: Black Holes} \\
+\hline
+Field & Equation/Par & Description \\ \hline\hline
+
+BH\_AccretionLength &
+\S\ref{??} &
+?? \\
+
+BH\_CumlAccrMass &
+\S\ref{SecBH} &
+Cumulative mass that has been accreted onto this black hole.  \\
+
+BH\_CumlNumSeeds &
+\S\ref{SecBH} &
+Cumulative number of black hole seeds swallowed by this black hole. \\
+
+BH\_Density &
+\S\ref{SecBH} &
+Co-moving gas density at the location of the black hole. \\
+
+BH\_FormationTime &
+\S\ref{SecBH} &
+Scale factor when this black hole was formed. \\
+
+BH\_EnergyReservoir &
+\S\ref{??} &
+?? \\
+
+BH\_FormationTime &
+\S\ref{??} &
+?? \\
+
+BH\_Mass &
+\S\ref{SecBH} &
+Black hole \textit{subgrid} mass (see Appendix of \cite{2016AnC....15...72M} for more details). \\
+
+BH\_Mdot &
+\S\ref{SecBH} &
+Instantaneous black hole accretion rate. \\
+
+BH\_MostMassiveProgenitorID &
+\S\ref{SecBH} &
+At the time of the last BH-BH merger, this is the ParticleID of the most massive member of the pair. \\
+
+BH\_Pressure &
+\S\ref{SecBH} &
+Gas pressure at the location of the black hole. \\
+
+BH\_SoundSpeed &
+\S\ref{SecBH} &
+Gas sound speed at the location of the black hole. \\
+
+BH\_SurroundingGasVel &
+\S\ref{SecBH} &
+Peculiar velocity of the gas at the location of the black hole. \\
+
+BH\_TimeLastMerger  &
+\S\ref{SecBH} &
+Expansion factor when black hole particle last accreted another black hole. 0 if the particle has never accreted another black hole. \\
+
+BH\_WeightedDensity &
+\S\ref{??} &
+?? \\
+
+Coordinates &
+\S\ref{SecParticles} &
+\coordinates \\
+
+GroupNumber &
+\S\ref{SecFOF} &
+\groupnumber \\
+
+HostHalo\_TVir\_Mass &
+- &
+Estimate of host FoF group's virial temperature, calculated from the local velocity dispersion. \\
+
+Masses &
+\S\ref{SecParticles} &
+This variable was called `\texttt{Mass}' in \eagle. BH \textit{particle} mass. Users should use the black hole subgrid mass ({\sc
+BH\_Mass}) for the actual black hole subgrid mass.\\
+
+ParticleIDs &
+\S\ref{SecParticles} &
+Unique particle identifier. ID is inherited from parent gas particle. \\
+
+SmoothingLength &
+\S\ref{SecParticles} &
+Co-moving SPH smoothing kernel. \\
+
+SubGroupNumber &
+\S\ref{SecFOF}
+&
+\subgroupnumber \\
+
+Velocities &
+\S\ref{SecParticles} &
+\velocity \\
+
+\hline
+\end{tabular}
