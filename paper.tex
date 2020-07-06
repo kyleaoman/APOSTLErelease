@@ -61,14 +61,14 @@ particle belongs to. Values range from 0-($N$-1) where $N$ is the total number
 of subgroups for this particular FoF group. Values of $2^{30}$ indicate this
 particle does not belong to any subgroup. Subgroup number 0 refers to the
 central subgroup, subgroup numbers greater than 0 refer to satellites.}
-\newcommand{\velocity}{The peculiar velocity, $a{\rm d}{\bf x}/{\rm d}t$ (see
-the Appendix of \cite{mcalpine2016} for more details).}
+\newcommand{\velocity}{This variable was called `\texttt{Velocity}' in \eagle. The peculiar velocity, $a{\rm d}{\bf x}/{\rm d}t$ (see
+the Appendix of \cite{2016A&C....15...72M} for more details).}
 \newcommand{\veq}{$a \dot x / \sqrt{a}$}
 \newcommand{\coordinates}{Co-moving coordinates.}
 \newcommand{\eagle}{{\sc eagle}}
 \newcommand{\apostle}{{\sc apostle}}
 \newcommand{\virgo}{{\sc virgo}}
-\newcommand{\REF}{{\sc reference}}
+\newcommand{\REF}{{\sc eagle reference}}
 \newcommand{\Msun}{{\hbox{${\rm M}_\odot$}}}
 \newcommand{\hdf}{{\sc hdf5}}
 \newcommand{\gadget}{{\sc gadget}}
@@ -76,69 +76,131 @@ the Appendix of \cite{mcalpine2016} for more details).}
 \maketitle
 
 \begin{abstract}
-This manual accompanies the release of the particle data for 24 simulations of
-the \eagle\ suite of cosmological hydrodynamical simulations of galaxy
-formation by the \virgo\ consortium. It describes how to download these
-snapshots and how to extract datasets from them, emphasising the meaning of
-variables, and their units. We provide examples for extracting the particle
-data in {\sc python}. This data release complements our earlier release of
-numerous integrated properties of the galaxies in \eagle\ through an {\sc sql}
-relational database. This database has been updated to include the additional
-simulations that are part of the present data release. Scientists wanting to
-use \eagle\ may find it useful to first investigate whether their analysis can
-be performed using the database, before accessing the particle data.  The
-particles in the snapshot files are indexed by a peano-hilbert key. This allows
-for an eased extraction of simply connected spatial volumes, without needing to
-read the entire snapshot. This makes it possible to analyse many aspects of
-galaxies using modest computing resources, even when using \eagle\ simulations
-with large numbers of particles. A reading routine is provided to simplify this
-process.
+This manual accompanies the release of the group catalogs and particle data for
+the \apostle\ suite of cosmological hydrodynamical zoom-in simulations of galaxy
+formation in Local Group-like regions. The galaxy formation model used in \apostle\
+is closely related to that used in the \eagle\ project. We describe how to download
+these data and how to extract information from them, emphasising differences relative
+to the similar \eagle\ public data. The group catalogs are hosted on the same {\sc sql}
+database as the equivalent from \eagle. We provide example routines for reading the
+tables, and some simple analyses, in {\sc python}.
 \end{abstract}
 
 \section{Introduction}
+Given the similarity with the \eagle\ data releases, we have used \cite{2016A&C....15...72M,2017arXiv170609899T} as the basis for this document, repeating substantial information contained in those guides for convenience where relevant.
+
 \subsection{The \eagle\ simulations}
+\subsection{The \apostle\ zoom-in simulations}
 
 \begin{table}
-\caption{Box sizes and resolutions of the main \eagle\ simulations.  From
-left-to-right the columns show: simulation name suffix; comoving box size;
-number of dark matter particles (there is initially an equal number of baryonic
-particles); initial baryonic particle mass; dark matter particle mass;
-comoving Plummer-equivalent gravitational softening length; maximum proper
-softening length.} 
-\label{table:sims}
- \begin{center}
-\begin{tabular}{lrrrrrrr}
-\hline
-Name & $L$ & $N$ & $m_{\rm g}$ & $m_{\rm dm}$ &
-$\epsilon_{\rm com}$ & $\epsilon_{\rm prop}$ \\  
-& (cMpc) & & ($\Msun$) & ($\Msun$) & (ckpc) & (pkpc)\\
+\caption{The parameters of the {\small APOSTLE} resimulations. The first two columns list labels identifying each run. The following columns list the virial masses of each of the primaries at $z=0$; their relative separation, radial velocity, and tangential velocity in the {\small DOVE} simulation, as well as the initial baryonic mass per particle in the hydrodynamical runs. The dark matter particle mass is $m_{\rm DM}=(1/f_{\rm bar}-1) \, m_{\rm gas}$, where $f_{\rm bar}$ is the universal baryon fraction. (Dark matter-only runs have a particle mass equal to the sum of $m_{\rm gas}+m_{\rm DM}$.) The last column lists the value of the Plummer-equivalent gravitational softening, which is comoving at early times, but fixed at the listed value after $z=3$. Reproduced from \cite{2016MNRAS.457..844F}.}
+\vspace{5pt}
+\centering
+\footnotesize
+\begin {tabular}{lcrrrrrcc}
 \hline 
-{\sc Ref}L0025N0376 &  25 & $376^3$ & $1.81\times 10^6$ & $9.70\times 10^6$ & 2.66 &0.70\\
-{\sc Recal}L0025N0752 &  25 & $752^3$ & $2.26\times 10^5$ & $1.21\times 10^6$ & 1.33 & 0.35\\
-{\sc Ref}L0050N0752 &  50 & $752^3$ & $1.81\times 10^6$ & $9.70\times 10^6$ & 2.66 &0.70\\
-{\sc Ref}L0100N1504 & 100 & $1504^3$ & $1.81\times 10^6$ & $9.70\times 10^6$ & 2.66 &0.70\\
+\multicolumn{1}{c}{Name} &
+\multicolumn{1}{c}{Run} &
+\multicolumn{1}{c}{$M_{200}^{[1]}/10^{12}$} &
+\multicolumn{1}{c}{$M_{200}^{[2]}/10^{12}$} &
+\multicolumn{1}{c}{Separation} &
+\multicolumn{1}{c}{$V_{\rm r}$} &
+\multicolumn{1}{c}{$V_{\rm t}$} &
+\multicolumn{1}{c}{$m_{\rm gas}/10^4$} &
+\multicolumn{1}{c}{$\epsilon_{\rm {max}}$} \\
+&
+\multicolumn{1}{c}{(resolution)} &
+\multicolumn{1}{c}{$(\Msun)$} &
+\multicolumn{1}{c}{$(\Msun)$} &
+\multicolumn{1}{c}{(kpc)} &
+\multicolumn{1}{c}{(${\rm km}\,{\rm s}^{-1}$)} &
+\multicolumn{1}{c}{(${\rm km}\,{\rm s}^{-1}$)} &
+\multicolumn{1}{c}{$(\Msun)$} &
+\multicolumn{1}{c}{(pc)} \\  
+\hline
+AP-1  &  L1/L2/L3   & $1.66$  &   $1.10$  &  $850$   &   $-51$   & $35$  & $0.99$/$12.0$/$147$ &  $134/307/711$ \\
+AP-2  &  L2/L3   & $0.85$ & $0.83$   &  $809$   &   $-39$   & $97$  & $12.5$/$147$ &  307/711    \\
+AP-3  &  L2/L3   & $1.52$  &   $1.22$  &  $920$   &   $-35$   & $84$  & $12.5$/$147$ &  307/711     \\
+AP-4  &  L1/L2/L3   & $1.38$  &   $1.35$  &  $790$   &   $-59$   & $24$  & $0.49$/$12.2$/$147$ & 134/307/711  \\
+AP-5  &  L2/L3   & $0.93$ &   $0.87$ &  $828$   &   $-33$   & $101$ & $12.5$/$147$ &  307/711 \\
+AP-6  &  L2/L3   & $2.36$  &   $1.21$  &  $950$   &   $-18$   & $60$  & $12.7$/$137$ &  307/711 \\
+AP-7  &  L2/L3   & $1.88$  &   $1.09$  &  $664$   &   $-174$  & $24$  & $11.3$/$134$ &  307/711 \\
+AP-8  &  L2/L3   & $1.72$  &  $0.65$  &  $817$   &   $-120$  & $96$  & $11.0$/$137$ &  307/711 \\
+AP-9  &  L2/L3   & $0.96$ &  $0.68$  &  $814$   &   $-28$   & $48$  & $10.9$/$138$ &  307/711 \\
+AP-10 &  L2/L3   & $1.46$  &   $0.87$ &  $721$   &   $-63$   & $48$  & $11.0$/$146$ &  307/711 \\
+AP-11 &  L2/L3   & $0.99$ &   $0.80$ &  $770$   &   $-124$  & $22$  & $11.1$/$153$ &  307/711 \\
+AP-12 &  L2/L3   & $1.11$  &  $0.58$  &  $635$   &   $-53$   & $50$  & $10.9$/$138$ &  307/711 \\
 \hline
 \end{tabular}
-\end{center}
+\label{TabLGSims}
 \end{table}
 
-\subsection{The \eagle\ database - FoF and {\sc subfind} groups}
+\begin{table}
+\caption{The positions of main haloes at $z=0$ and parameters of the high-resolution Lagrangian regions of the \apostle\ volumes in the initial conditions. The first column labels each volume. The next columns list the ({\small X,Y,Z}) coordinates of each of the primaries at $z=0$, followed by positions of the centers and the radii of the Lagrangian spheres. The phase descriptor for the {\small APOSTLE} runs is, in {\small PANPHASIA} format, {[Panph1,L16,(31250,23438,39063),S12,CH1292987594,DOVE]}. Reproduced from \cite{2016MNRAS.457..844F}.}
+\vspace{5pt}
+\centering
+\begin {tabular}{lrrrrrrrrrr}
+\hline
+\multicolumn{1}{c}{Name} &
+\multicolumn{1}{c}{$X_{1}$} &
+\multicolumn{1}{c}{$Y_1$} &
+\multicolumn{1}{c}{$Z_1$} &
+\multicolumn{1}{c}{$X_2$} &
+\multicolumn{1}{c}{$Y_2$} &
+\multicolumn{1}{c}{$Z_2$} &
+\multicolumn{1}{c}{$X_{\rm L}$} &
+\multicolumn{1}{c}{$Y_{\rm L}$} &
+\multicolumn{1}{c}{$Z_{\rm L}$} &
+\multicolumn{1}{c}{$R_{\rm L}$} \\
+&
+\multicolumn{1}{c}{[Mpc]} &
+\multicolumn{1}{c}{[Mpc]} &
+\multicolumn{1}{c}{[Mpc]} &
+\multicolumn{1}{c}{[Mpc]} &
+\multicolumn{1}{c}{[Mpc]} &
+\multicolumn{1}{c}{[Mpc]} &
+\multicolumn{1}{c}{[Mpc]} &
+\multicolumn{1}{c}{[Mpc]} &
+\multicolumn{1}{c}{[Mpc]} \\
+\hline
+AP-1  & 19.326    & 40.284   &	46.508  &   18.917 &  39.725   &  47.001 &  26.5   &	39.1    &  39.0   & 5.7     \\
+AP-2  & 28.798	  & 65.944   &	17.153  &   28.366 &  65.981   &  16.470 &  28.1   & 	60.2    & 18.4	  & 10.2    \\
+AP-3  & 51.604    & 28.999   &	11.953  &   51.091 &  28.243   &  12.061 &  46.0   &	31.7    & 11.6    & 12.0     \\
+AP-4  & 63.668    & 19.537   &	72.411  &   63.158 &  20.137   &  72.467 &  57.1   &	20.6	& 74.9	  & 6.0     \\
+AP-5  & 42.716	  & 87.781   &	93.252  &   42.872 &  88.478   &  93.671 &  40.8   &	85.4    & 91.8    & 9.9     \\
+AP-6  & 35.968    & 9.980    &	43.782  &   36.171 &   9.223   &  43.251 &  32.9   &	13.1    & 45.2    & 7.1    \\
+AP-7  & 91.590    & 43.942   &	14.826  &   91.822 &  43.323   &  14.885 &  99.3   &	39.7    & 15.9    & 7.1   \\
+AP-8  &  4.619    & 22.762   &  85.535  &   4.604  &  23.508   &  85.203 &  4.9    &	20.4    & 89.9    & 9.3   \\
+AP-9  &  57.044   & 88.490   &	74.765  &  57.496  &  87.889   & 74.456  &  55.2   &	93.4    & 76.5	  & 5.7   \\
+AP-10 & 61.949    & 24.232   &	98.305  &  61.867  & 24.925    & 98.124  &  62.5   & 	24.5    & 93.5    & 8.4   \\
+AP-11 &  12.564   & 48.080   &	35.249  &  12.484  & 47.793    & 35.959  &  18.3   &	43.1	& 29.9    &5.9    \\
+AP-12 &  97.553   & 89.587   &	72.093  &   97.351 & 90.100    & 72.407  &  98.5   &	91.9    & 81.9    & 5.7   \\
+\hline
+\end{tabular}
+\label{TabIC}
+\end{table}
 
-\section{The \eagle\ particle data} \label{sect:eagle_pdata}
+\section{The \apostle\ FoF and subfind groups on the \eagle\ database}
+
+\section{The \apostle\ particle data}
+\label{SecEaglePData}
+
 \subsection{Downloading the data}
 
 \subsection{The snapshot format}
 
 \begin{table}
-\label{table:file_layout}
+\label{TabFileLayout}
 \caption{\hdf\ groups in snapshot files}
-\begin{center}
-\footnotesize
+\centering
 \renewcommand{\arraystretch}{1.5}
+\footnotesize
+\vspace{5pt}
 \begin{tabular}{>{\ttfamily}p{4cm}p{3cm}p{9.5cm}}
 \hline
-Name & Type & Description \\ \hline\hline
-snap\_028\_z000p000.0.hdf5 & HDF5 FILE & single file of snapshot 28 ($z=0$) \\
+Name & Type & Description \\
+\hline
+snap\_127\_z000p000.0.hdf5 & HDF5 FILE & single file of snapshot 127 ($z=0$) \\
 \hline
 Config & HDF5 GROUP & Configuration parameters for the GADGET code, and svn subversion revision number \\
 Constants & HDF5 GROUP & Numerical values for physical constants used in the run \\
@@ -147,6 +209,8 @@ Header & HDF5 GROUP & \gadget\ header, including Hubble parameter $h$ and expans
 Parameters & HDF5 GROUP & Initial and solar abundances of all chemical elements tracked \\
 PartType0 & HDF5 GROUP & Gas particle data \\
 PartType1 & HDF5 GROUP & Dark matter particle data  \\
+PartType2 & HDF5 GROUP & Boundary particle data \\
+PartType3 & HDF5 GROUP & Boundary particle data \\
 PartType4 & HDF5 GROUP & Star particle data \\
 PartType5 & HDF5 GROUP & Black hole particle data \\
 RuntimePars & HDF5 GROUP & Input parameters for this run \\
@@ -159,8 +223,7 @@ h-scale-exponent & HDF5 ATTRIBUTE & Physical quantity is $h^{\rm h-scale-exponen
 \hline
 
 \end{tabular}
-\end{center}
-\label{table:groups}
+\label{TabGroups}
 \end{table}
 
 Particle data are output in snapshots - the state of the system at a given
@@ -168,7 +231,7 @@ redshift - with different redshifts, $z$, corresponding to different snapshots
 (29 snapshots from $z=20$ to $z=0$). Each snapshot is distributed over several
 files, and to extract all particles from a given snapshots one must read {\em
 all} files - even when reading a single variable such as, for example, the
-coordinates of dark matter particles (Section \ref{sect:python_examples}
+coordinates of dark matter particles (Section \ref{SecPythonExamples}
 contains an example in {\sc Python} of how to read snapshot datasets in this
 manner). Readers unfamiliar with {\sc gadget} may want to read Volker Springel's
 description of the format from the
@@ -182,21 +245,21 @@ interact with this platform-independent format through libraries, with most
 high-level analysis languages such as {\sc idl} and
 {\color{blue}\href{https://www.python.org/}{\sc python}} able to read variables
 from such files directly by name. We provide examples of how to do this in {\sc
-python} in Section \ref{sect:python_examples}.  Files can also be queried in
+python} in Section \ref{SecPythonExamples}.  Files can also be queried in
 compiled languages such as {\sc c} or {\sc fortran}, once the {\sc hdf5}
 libraries are installed. The {\sc hdf5} files can be directly visualised with
 an {\sc hdf5} viewer, for example
 {\color{blue}\href{https://www.hdfgroup.org/hdf-java-html/hdfview/}{hdfview}}.
 
 \subsection{\hdf\ groups in the snapshots}
-\label{sect:fof}
+\label{SecFOF}
 Each snapshot files contains a set of groups. \gadget\ allows for 6 different
 particle types (labelled 0-5). Properties of these particles are written in
 groups PartType0 to PartType5. As in \eagle, type 0 are gas particles, type 1 are
 dark matter particles, type 4 are stellar particles, and type 5 are
 supermassive black holes. Particles of type 2 and 3 were not used in \eagle, but are
 used in \apostle\ for the low-resolution particles outside the zoom-in region. We briefly describe the
-contents of each group next, see also Table~\ref{table:groups}.
+contents of each group next, see also Table~\ref{TabGroups}.
 
 \subsubsection{\texttt{Config}}
 The svn subversion revision number of the code that wrote this snapshot, and a
@@ -206,7 +269,7 @@ list of all the \gadget\ configuration options set when this code was compiled.
 calculation.
 
 \subsubsection{\texttt{HashTable}}
-\label{sect:hash_table}
+\label{SecHashTable}
 As in \eagle, particles are sorted such that particles in a set of cubic subvolumes
 of the simulation box are stored contiguously in the hdf5 files. Thus, retrieving
 the particles in a given region can be accelerated by determining which subvolumes
@@ -220,7 +283,7 @@ is therefore of limited use in \apostle. We provide guidance on reading the part
 tables efficiently in the examples below.
 
 \subsubsection{\texttt{Header}}
-\label{sect:header}
+\label{SecHeader}
 This contains the standard simulation parameters from \gadget, with some
 \eagle\ specific additions. As with standard \gadget, the arrays
 \texttt{NumPart\_ThisFile} and \texttt{NumPart\_Total} contain the numbers of
@@ -235,7 +298,7 @@ $\Omega_{\mathrm{m}}$), \texttt{OmegaLambda} (density parameter corresponding
 to the cosmological constant, $\Omega_\Lambda$), \texttt{OmegaBaryon} (mean
 baryon density in units of the critical density, $\Omega_{\mathrm{b}}$), and
 the \texttt{HubbleParam} ($H_0/(100~{\rm km~s}^{-1}{\rm Mpc}^{-1})\equiv h$ are
-taken from \cite{WMAP7}. \texttt{ExpansionFactor} is the current value of
+taken from \cite{2011ApJS..192...18K}. \texttt{ExpansionFactor} is the current value of
 the expansion factor $a$, and \texttt{Redshift}=$z\equiv (1/a) - 1$. As in
 \gadget, the variable \texttt{Time} is also the expansion factor in these
 cosmological runs, it is {\bf not} the age of the Universe. The variable
@@ -250,12 +313,12 @@ velocity.
 
 \subsubsection{\texttt{Parameters}} A list of the 9 species (chemical elements)
 tracked individually in the simulation (H, He, C, Ni, O, Ne, Mg, Si, Fe), their
-assumed primordial, and solar abundances, and the assumed metallicity of the
+assumed primordial and solar abundances, and the assumed metallicity of the
 Sun. Note that solar abundances and the metallicity of the Sun are not used in
 the code. The radiative cooling and heating interpolation tables used are
-described by \cite{Wiersma09a}, these also use Ca and S with ratios provided in
+described by \cite{2009MNRAS.393...99W}, these also use Ca and S with ratios provided in
 this group. The values of the abundances are collected from the literature and
-summarised in Table~1 of \cite{Wiersma09a} - most \eagle\ papers use these
+summarised in Table~1 of \cite{2009MNRAS.393...99W} - most \eagle\ papers use these
 values to convert metal mass fractions into abundances in units of the \lq
 solar\rq\ abundance.
 
@@ -272,7 +335,7 @@ outside the zoom-in region (types 2 \& 3, unused in \eagle) and the label \lq bn
 which actually corresponds to type 5 (black holes).
 
 \subsubsection{\texttt{PartType0-5}}
-\label{sect:part}
+\label{SecParticles}
 Type0 = gas, Type1 = dark matter, Type2 and Type3 = boundary, Type4 = stars and
 Type5=black holes. All particles\footnote{Note that the mass of PartType1 (dark
 matter variables) is the same for all particles, and stored in the
@@ -295,7 +358,7 @@ represents. In the case of the \texttt{Coordinates}, the numerical values
 stored are co-moving coordinates, in units of $h^{-1}$~Mpc. The proper position
 of a particle is therefore \begin{equation} {\bf r} =
 \texttt{Coordinates}\,a^\texttt{aexp-scale-exponent}\,h^\texttt{h-scale-exponent}\,\texttt{CGSConversionFactor}~{\rm
-cm}\,.  \label{eq:coordinates} \end{equation} The convention of specifying the
+cm}\,.  \label{EqCoords} \end{equation} The convention of specifying the
 cgs unit, and how the proper variable depends on its co-moving counterpart in
 terms of powers of $a$ and $h$, is used for all variables. As another example,
 peculiar velocity and particle mass are obtained as
@@ -307,7 +370,7 @@ m &=& \texttt{Mass}\,a^0\,h^{-1}\,1.989\times 10^{43}~{\rm g}\,.
 
 
 \section{Description of all variables}
-Tables \ref{table:gas}, \ref{table:dm}, \ref{table:boundary2}, \ref{table:boundary3}, \ref{table:star} and \ref{table:bh}
+Tables \ref{TabGas}, \ref{TabDM}, \ref{TabBoundary2}, \ref{TabBoundary3}, \ref{TabStar} and \ref{TabBH}
 list descriptions for the particle properties appearing in the snapshot output.
 Most time-dependent variables are {\em predicted} to the current snapshot time,
 so for example the density variable in the snapshot file is $\rho(t) =
@@ -321,10 +384,10 @@ estimates of the density should be close. Note that the SPH smoothing lengths
 are also predicted.
 
 Smoothing lengths ($h$) of gas particles are predicted as per the method of
-\cite{hopkins2013}, whereby the SPH particle density
+\cite{2013MNRAS.428.2840H}, whereby the SPH particle density
 
 \begin{equation}
-\label{eq:rho}
+\label{EqRho}
 \rho_i = \sum_{j=1}^N m_j W_{ij}(h_i),
 \end{equation}
 	
@@ -334,7 +397,7 @@ the value of the kernel\footnote{\eagle\ uses the ${\cal C}_2$ kernel of
 smoothing length of $h_i \propto \rho_i^{-1/3}$, such that the relationship $(4
 \pi / 3) h_i^{3} \rho_i = m_i N_{\mathrm{ngb}}$ holds true for a given choice
 of $N_{\mathrm{ngb}}$, referred to as the \lq effective neighbour number\rq\
-(see \cite{hopkins2013} and Appendix~A1 of \cite{schaye2015} for details).
+(see \cite{2013MNRAS.428.2840H} and Appendix~A1 of \cite{2015MNRAS.446..521S} for details).
 $N_{\mathrm{ngb}}$ is chosen to be 58 for gas particles. The smoothing lengths
 for star and black hole particles are also predicted from the neighbouring gas
 particles. However as they are not gas particles themselves, the smoothing
@@ -345,13 +408,13 @@ black holes.
 
 A short description of all variables is given in the tables below, together
 with a reference to an equation clarifying the meaning of the variable taken
-from \cite{schaye2015}, see also \cite{mcalpine2016}. We begin by giving some
+from \cite{2015MNRAS.446..521S}, see also \cite{2016A&C....15...72M}. We begin by giving some
 more information about those variables whose meaning is difficult to convey in
 a single sentence.
 
 \subsection{Gas particle variables - \texttt{PartType0}}
 \subsubsection{Thermodynamic variables}
-\label{sect:thermo}
+\label{SecThermo}
 \eagle\ uses a variety of thermodynamic variables, and it may be important to
 realise how they are related, and which version appears in the particle files.
 In this {\sc anarchy} version of pressure-entropy SPH, each gas particle $i$
@@ -364,50 +427,50 @@ d}t}|_{\rm hydro}=-\sum_{j=1}^N m_j  \left[
 \frac{A_j^{1/\gamma}}{A_i^{1/\gamma}}\frac{\bar{P}_i}{\bar{\rho}_i^2}f_{ij}\nabla_i
 W_{ij}(h_i) ~ +
 \frac{A_i^{1/\gamma}}{A_j^{1/\gamma}}\frac{\bar{P}_j}{\bar{\rho}_j^2}f_{ji}\nabla_i
-W_{ij}(h_j) \right] , \label{eq:mot} \end{equation} where the entropy-weighted
+W_{ij}(h_j) \right] , \label{EqMOT} \end{equation} where the entropy-weighted
 pressure, $\bar{P}$, and density, $\bar{\rho}$, are computed for each particle
 from \begin{equation} \bar{P}_i = A_i
 \left(\frac{1}{A_i^{1/\gamma}}\sum_{j=1}^N m_j A_j^{1/\gamma}
-W_{ij}(h_i)\right)^{\gamma} \equiv A_i \bar{\rho}_i^{\gamma} \,, \label{eq:pS}
+W_{ij}(h_i)\right)^{\gamma} \equiv A_i \bar{\rho}_i^{\gamma} \,, \label{EqpS}
 \end{equation} $f_{ij}$ are \lq grad-$h$ \rq terms, and $\gamma=5/3$ is the adiabatic index. For
 gas in hydrostatic equilibrium, the acceleration as computed from
-Eq.~(\ref{eq:mot}) is balanced by gravity. 
+Eq.~(\ref{EqMOT}) is balanced by gravity. 
 
-Shocks will change $A_i$ at a rate consistent with Eq.~(\ref{eq:mot}).
+Shocks will change $A_i$ at a rate consistent with Eq.~(\ref{EqMOT}).
 Radiative cooling and heating, feedback, and the imposed pressure floor may
 also change $A_i$, as described next.  The radiative rates depend on the
-particle temperature, $T$, and density Eq.~(\ref{eq:rho}), which are computed
+particle temperature, $T$, and density Eq.~(\ref{EqRho}), which are computed
 for each particle $i$ as
 
 \begin{eqnarray}
-\label{eq:u}
+\label{EqU}
 u_i &=& {S_i\,\bar{\rho}^{\gamma-1}\over \gamma-1} = {kT_i\over (\gamma-1)\mu_i\,m_{\rm H}},\\
-\label{eq:mu}
+\label{EqMu}
 \mu_i &=& \mu_i(u_i, \rho_i, J(\nu), X, Y, Z),\\
-\label{eq:cool}
+\label{EqCool}
 \rho_i\,{{\rm d}u_i\over {\rm dt}} &=& -\Lambda(T_i)\rho_i^2+{\cal H}(T_i)\,\rho_i\,.
 \end{eqnarray}
 The conversion from thermal energy per unit mass, $u$, to temperature $T$,
 depends on the mean molecular weight (in units of the proton mass, $m_{\rm
 H}$), $\mu$. $\mu$ is computed using the interpolation tables described by
-\cite{Wiersma09a}, which accounts for the element abundances of the particle,
+\cite{2009MNRAS.393...99W}, which accounts for the element abundances of the particle,
 the thermal energy per unit mass, $u_i$, the density, $\rho_i$, and the
-radiation field $J(\nu)$, as is symbolically illustrated by Eq.~(\ref{eq:mu}).
-Note that the density $\rho$ in Eq.~(\ref{eq:rho}), Eq.~(\ref{eq:mu}) and
-Eq.~(\ref{eq:cool}) is the usual SPH density, which differs from the
-entropy-weighted density that appears in Eq.~(\ref{eq:mot}), Eq.~(\ref{eq:pS}),
-and Eq.~(\ref{eq:u}).
+radiation field $J(\nu)$, as is symbolically illustrated by Eq.~(\ref{EqMu}).
+Note that the density $\rho$ in Eq.~(\ref{EqRho}), Eq.~(\ref{EqMu}) and
+Eq.~(\ref{EqCool}) is the usual SPH density, which differs from the
+entropy-weighted density that appears in Eq.~(\ref{EqMOT}), Eq.~(\ref{EqpS}),
+and Eq.~(\ref{EqU}).
 
 In the feedback routines, particle temperatures may be increased by a fixed
-increment ($\Delta T=10^{7.5}$~K in the case of stellar feedback for the {\sc
-reference model}). This is implemented by increasing the entropy of the particle
-by an amount computed from Eq.~(\ref{eq:u}). \eagle\ also imposes a pressure
+increment ($\Delta T=10^{7.5}$~K in the case of stellar feedback for the \REF\ model,
+which is the model used in \apostle). This is implemented by increasing the entropy of the particle
+by an amount computed from Eq.~(\ref{EqU}). \eagle\ also imposes a pressure
 floor and a minimum temperature floor ($T>100$~K). After feedback (but before
 cooling), we calculate $T_i$ for every (active) gas particle. We use this to
 compute the maximum temperature a particle had throughout its history, as well
 as the expansion factor that corresponds to this event.
 
-The radiative equation Eq.(\ref{eq:cool}) calculates the new value of $u$,
+The radiative equation (Eq.~\ref{EqCool}) calculates the new value of $u$,
 evaluating the rate at constant $\rho$. The new value of $u$ is used to update
 $S$ and $\dot S\equiv (S(t+dt)-S(t))/{\rm d}t$, where ${\rm d}t$ is the current
 time step.
@@ -421,8 +484,8 @@ are expressed in terms of the corresponding temperature thresholds $T_{\rm
 lim}$ and hydrogen number density thresholds, $n_{\rm H, lim}$, related by
 $n_{\rm H, lim}=X\rho_{\rm lim}/m_{\rm H}$ and $p_{\rm lim}=\rho_{\rm
 lim}T_{\rm lim}/(\mu\,m_{\rm H})$, where $\mu=4/(4-3Y)\approx 1.23$ is the mean
-molecular weight for neutral gas with the \cite{Planck13} Helium abundance by
-mass of $Y=0.248$. For the {\sc reference model}, these values are
+molecular weight for neutral gas with the \cite{2014A&A...571A..16P} Helium abundance by
+mass of $Y=0.248$. For the \REF\ model, used in \apostle, these values are
 
 \begin{itemize} 
 
@@ -441,7 +504,7 @@ T$, all of which are predicted to the snapshot time. The variables
 the maximum temperature this gas particle ever had, and the value of the
 expansion factor when this occurred, respectively. 
 
-\subsubsection{Abundances} \label{sect:abundances} The abundance group stores
+\subsubsection{Abundances} \label{SecAbundances} The abundance group stores
 the fraction of a particle's mass in each of the explicitly tracked elements
 (H, He, C, N, O, Ne, Mg, Si, Fe). Stellar particles enrich gas particles using
 the SPH scheme. During this enrichment step, the particle abundance of an
@@ -473,29 +536,29 @@ C}} = \sum_j m_{j, {\rm C}}\,W_{ij}(h_i)\,.  \end{equation} The {\em smoothed}
 C abundance is then $X_{\rm C}=\rho_{i, {\rm C}}/\rho_i$ and the variable
 \texttt{Carbon} in group \texttt{SmoothedElementAbundance} is $X_{\rm C}\,m$
 (and similarly for other elements and for other smoothed metallicities). The
-motivation for using a smoothed metallicity is explained in \cite{wiersma09b}.
+motivation for using a smoothed metallicity is explained in \cite{2009MNRAS.399..574W}.
 
 Smoothed abundances are used to calculate the radiative rates in
-Eq.~(\ref{eq:cool}), to set the metallicity dependence of feedback,
-Eq.(\ref{eq:f(Z,n)}), and to compute stellar evolution. However, the particle
+Eq.~(\ref{EqCool}), to set the metallicity dependence of feedback,
+Eq.(\ref{EqfZn}), and to compute stellar evolution. However, the particle
 metallicity is used to set the star formation threshold, see below.
 
 \subsubsection{Star formation variables}
-\label{sect:sfr}
-The star formation rate is compute using the method of \cite{schaye2008}. For a
+\label{SecSFR}
+The star formation rate is compute using the method of \cite{2008MNRAS.383.1210S}. For a
 gas particle $i$, the star formation rate is computed in \eagle\ as
 \begin{equation} \dot{m}_{i,\ast} = m_i\, A \left (1~{\rm M}_\odot\,{\rm
 pc}^{-2}\right)^{-n} \left ({\gamma \over G} f_{\rm g}
-\bar{P}\right)^{(n-1)/2}\,, \label{eq:sflaw} \end{equation} where $A$ and $n$
-are constants ($A=1.515\times 10^{-4}$ and $n=1.4$ in the {\sc reference}
+\bar{P}\right)^{(n-1)/2}\,, \label{EqSFLaw} \end{equation} where $A$ and $n$
+are constants ($A=1.515\times 10^{-4}$ and $n=1.4$ in the \REF\
 model), provided it is eligible for star formation. \eagle\ uses the
-metallicity-dependent star formation threshold from \cite{schaye2004}, which is
+metallicity-dependent star formation threshold from \cite{2004ApJ...609..667S}, which is
 a fit to the warm, atomic to cold, molecular phase transition, and also
-requires the particle to be cold enough (see section 4.3 in \cite{schaye2015}).
+requires the particle to be cold enough (see section 4.3 in \cite{2015MNRAS.446..521S}).
 The particle's star formation rate is stored in the variable
 \texttt{StarFormationRate}.
 
-The slightly misnamed variable \texttt{OnEquationOfState} is a star formation
+The variable \texttt{SfFlag} is a star formation
 flag. Its value is 0 if a gas particle has never crossed the star formation
 threshold. A positive non-zero value indicates the value of the expansion
 factor $a$ when it last became star forming, a negative value indicates the
@@ -507,10 +570,10 @@ matter particles have the same particle mass, found as the second entry in the
 array \texttt{MassTable} in the group \texttt{Header}, and with the same units
 as all other mass variables. For an example of using this to create an array of
 dark matter particle masses in {\sc Python}, see Section
-\ref{sect:dm_mass_example}
+\ref{SecDMMassExample}
 
 \subsection{Star particle variables - \texttt{PartType4}}
-\label{sect:feedback}
+\label{SecFeedback}
 In \eagle, a gas particle may be wholly converted into a star particle. That
 star particle inherits all element abundances of its parent gas particle. In
 addition, \eagle\ stores the density ($\rho$ - the SPH density) of the gas
@@ -520,30 +583,30 @@ of the expansion factor, $a$, when the conversion happened (variable
 once a gas particle has been converted into a star: they will never change.
 
 The variable \texttt{FeedbackEnergy\_Fraction} is the instantaneous value of
-$f_{\rm th}$ from Eq.(7) of \cite{schaye2015}
+$f_{\rm th}$ from Eq.(7) of \cite{2015MNRAS.446..521S}
 
 \begin{equation}
 f_{\rm th} = f_{\rm th,min} + \frac{f_{\rm th,max} - f_{\rm th,min}}
 {1 + \left (\frac{Z}{0.1\times 0.02}\right )^{n_Z} \left (\frac{n_{\rm H,birth}}{n_{{\rm H},0}}\right )^{-n_n}},
-\label{eq:f(Z,n)}
+\label{EqfZn}
 \end{equation} 
 
 \noindent the expectation value of the fraction of the energy released by
 type II SNe used to heat gas particles in the stellar feedback implementation.
 Note that this is the expectation value of the energy used in the stochastic
-implementation of thermal feedback of \cite{DallaVecchia_Schaye2012}. The
+implementation of thermal feedback of \cite{2012MNRAS.426..140D}. The
 normalisation of the (particle metallicity) dependence is 10 per cent of 0.02 -
 an approximation to the solar metallicity. The density dependence is calculated
 based on the SPH density, $\rho$.
 
 As a star particle ages, \eagle\ evolves the single stellar population with
-stellar life-times and evolutionary tracks as described by \cite{wiersma09b}.
+stellar life-times and evolutionary tracks as described by \cite{2009MNRAS.399..574W}.
 As stars evolve, mass and metals are transferred from the star particle to
 neighbouring gas particles. The variable \texttt{Mass} is the current particle
 mass, whereas \texttt{InitialMass} is the star particle's birth mass.
 
 \subsection{Black hole particle variables - \texttt{PartType5}}
-\label{sect:BH}
+\label{SecBH}
 Black hole (BH) particles are seeded with a given mass in each FoF halo above a
 given mass that does not already contain a BH. The expansion factor $a$ of when
 the BH was seeded is stored in the snapshot variable
@@ -556,23 +619,23 @@ BH merged with, and \texttt{BH\_MostMassiveProgenitorID} is the
 merged with, and \texttt{BH\_TimeLastMerger} is the value of $a$ when the last
 merger occurred.
 
-Following \cite{springel2005b}, \eagle\ uses a subgrid model for BH particles.
+Following \cite{2005MNRAS.361..776S}, \eagle\ uses a subgrid model for BH particles.
 The mass of the black hole, $m_{\rm BH}$, which sets its accretion rate, is
 allowed to differ from the particle mass, $m$, which is used only for
 gravitational calculations. A short summary of the relevant equations, taken
-from \cite{schaye2015}, clarifies the meaning of the variables that describe
+from \cite{2015MNRAS.446..521S}, clarifies the meaning of the variables that describe
 accretion. The accretion rate is the minimum of the Eddington rate,
 \begin{equation} \dot{m}_{\rm Edd} = \frac{4\pi G m_{\rm BH} m_{\rm
 H}}{\epsilon_{\rm r} \sigma_{\rm T} c}, \end{equation} ($G$ is Newton's
 constant, $\sigma_{\rm T}$ Thomson's cross section and $c$ the speed of light,
 and $\epsilon_r$ is the variable \\ \texttt{BlackHoleRadiativeEfficiency} in
-the \texttt{RunTimePars} group, $\epsilon_r=0.1$ in the {\sc reference runs})
+the \texttt{RunTimePars} group, $\epsilon_r=0.1$ in the \REF\ model)
 and
 
 \begin{equation}
 \dot{m}_{\rm accr} = \dot{m}_{\rm Bondi} \times \min\left
 (C_{\rm visc}^{-1}(c_{\rm s}/V_\phi)^3,1 \right ),
-\label{eq:mdotaccr}
+\label{EqMdotAccr}
 \end{equation}
 
 \noindent where $\dot{m}_{\rm Bondi}$ is the Bondi-Hoyle rate for
@@ -586,8 +649,7 @@ m_{\rm BH} = (1-\epsilon_r)\,\dot m_{\rm accr}\,dt\,. \end{equation} \noindent
 \noindent When a BH accretes mass, it stores energy $E$ in a reservoir, which
 increases in time step $dt$ by \begin{equation} \Delta E_i =
 \epsilon_f\,\epsilon_r\,\dot m_{\rm accr}\,dt\,c^2\,, \end{equation} where
-$\epsilon_f=$\texttt{BlackHoleFeedbackFactor}, and is 0.15 in the {\sc
-reference} model.
+$\epsilon_f=$\texttt{BlackHoleFeedbackFactor}, and is 0.15 in the \REF\ model.
 
 \noindent The sound speed, $c_{\rm s}$, the speed of the gas relative to the BH,
 $v\equiv |{\bf v}|$, and the weighted pressure near the BH, $p_{\rm BH}$, are
@@ -610,16 +672,15 @@ referring to the last time the BH particle was active, are, \begin{eqnarray} h
 \hbox{\texttt{BH\_Energy\_Reservoir}}\nonumber\\ \end{eqnarray}
 
 \noindent When a BH heats surrounding gas, its energy reservoir is
-correspondingly decreased, as described in Section 4.6 of \cite{schaye2015}.
+correspondingly decreased, as described in Section 4.6 of \cite{2015MNRAS.446..521S}.
 
 \section{Python code examples}
-\label{sect:python_examples}
+\label{SecPythonExamples}
 Below we provide some simple example {\sc Python} scripts that read, process
-and display data from the \eagle\ snapshots at $z=0$ ({\sc Snapnum} 28). Each
-example is available to download at {\color{blue}
-\href{http://icc.dur.ac.uk/Eagle/database.php}{http://icc.dur.ac.uk/Eagle/database.php}}.
+and display data from the \apostle\ snapshots at $z=0$ ({\sc Snapnum} 127). Each
+example is available to download at ??.
 These examples assume by default that the snapshot data are located in a folder
-named \lq data\rq and in order for these routines to work, the user must have {\sc
+named ``data'' and in order for these routines to work, the user must have {\sc
 Numpy} ({\color{blue}\href{http://www.numpy.org/}{http://www.numpy.org/}}), {\sc
 MatPlotLib}
 ({\color{blue}\href{https://matplotlib.org/}{https://matplotlib.org/}}) and {\sc
@@ -641,7 +702,7 @@ installed.
 \newpage
 
 \begin{table}
-\label{table:gas}
+\label{TabGas}
 \caption{Description and equation, where applicable, for each property of gas
 (PartType0) particles.}
 \begin{center}
@@ -653,114 +714,114 @@ installed.
 Field & Equation/Par & Description \\ \hline\hline
 
 AExpMaximumTemperature &
-\S\ref{sect:thermo} &
+\S\ref{SecThermo} &
 Expansion factor when particle had maximum temperature. \\
 
 Coordinates &
-Eq.~(\ref{eq:coordinates}) &
+Eq.~(\ref{EqCoords}) &
 \coordinates \\
 
 Density &
-Eq.~(\ref{eq:rho}) &
+Eq.~(\ref{EqRho}) &
 Co-moving density. \\
 
 ElementAbundance &
-\S\ref{sect:abundances} &
+\S\ref{SecAbundances} &
 Mass of [Carbon, Helium, Hydrogen, Iron, Magnesium, Neon, Nitrogen, Oxygen, Silicon] divided by particle mass. \\
 
 Entropy &
-\S\ref{sect:thermo} &
+\S\ref{SecThermo} &
 Particle entropy. \\
 
-GroupNumber & \S\ref{sect:fof} & \groupnumber \\
+GroupNumber & \S\ref{SecFOF} & \groupnumber \\
 
 HostHalo\_TVir\_Mass &
 - &
 Estimate of host FoF group's virial temperature, calculated from the local velocity dispersion. \\
 
 InternalEnergy &
-Eq.~(\ref{eq:u}) &
+Eq.~(\ref{EqU}) &
 Thermal energy per unit mass. \\
 
 IronMassFracFromSNIa &
-\S\ref{sect:abundances} &
+\S\ref{SecAbundances} &
 Mass of Iron from SNIa divided by particle mass. \\
 
-Mass &
-\S\ref{sect:part} &
-Particle mass.\\
+Masses &
+\S\ref{SecParticles} &
+This variable was called `\texttt{Mass}' in \eagle. Particle mass.\\
 
 MaximumTemperature &
-S\ref{sect:thermo} &
+S\ref{SecThermo} &
 Maximum temperature ever reached by particle. \\
 
 MetalMassFracFromAGB &
-\S\ref{sect:abundances} &
+\S\ref{SecAbundances} &
 Mass of metals received from AGB divided by particle mass. \\
 
 MetalMassFracFromSNII &
-\S\ref{sect:abundances} &
+\S\ref{SecAbundances} &
 Mass of metals received from SNII divided by particle mass. \\
 
 MetalMassFracFromSNIa &
-\S\ref{sect:abundances} &
+\S\ref{SecAbundances} &
 Mass of metals received from SNIa divided by particle mass. \\
 
 Metallicity &
-\S\ref{sect:abundances} & Mass of elements heavier than Helium, including
+\S\ref{SecAbundances} & Mass of elements heavier than Helium, including
 those not tracked individually, divided by particle mass\\
 
-OnEquationOfState &
-\S\ref{sect:sfr} & 0 if particle has never been star-forming, +ve if currently star-forming,
+ParticleIDs &
+\S\ref{SecParticles} & Unique particle identifier. Index encodes the particles position in the
+initial conditions (see Appendix of \cite{2015MNRAS.446..521S} for details). \\
+
+SfFlag &
+\S\ref{SecSFR} & This variable was called `\texttt{OnEquationOfState}' in \eagle. 0 if particle has never been star-forming, +ve if currently star-forming,
 -ve if not currently star-forming. Value indicates scale factor at which it
 obtained its current state. Note this does not ensure the gas particle is on
 the equation of state for +ve values, as gas particles can yield non-zero star
 formation rates  up to 0.5~dex above the equation of state. \\
 
-ParticleIDs &
-\S\ref{sect:part} & Unique particle identifier. Index encodes the particles position in the
-initial conditions (see Appendix of \cite{schaye2015} for details). \\
-
 SmoothedElementAbundance &
-\S\ref{sect:abundances}  & SPH kernel weighted ElementAbundance (see Section 2.2 of \cite{springel2005} for
+\S\ref{SecAbundances}  & SPH kernel weighted ElementAbundance (see Section 2.2 of \cite{2005MNRAS.364.1105S} for
 the description of kernel weighted properties in SPH). \\
 
 SmoothedIronMassFracFromSNIa &
-\S\ref{sect:abundances}  & SPH kernel weighted IronMassFracFromSNIa. \\
+\S\ref{SecAbundances}  & SPH kernel weighted IronMassFracFromSNIa. \\
 
 SmoothedMetallicity &
-\S\ref{sect:abundances}  &
+\S\ref{SecAbundances}  &
 SPH kernel weighted Metallicity. \\
 
 SmoothingLength &
-\S\ref{sect:part} &
+\S\ref{SecParticles} &
 Co-moving SPH smoothing kernel. \\
 
 StarFormationRate &
-Eq.~(\ref{eq:sflaw}) &
+Eq.~(\ref{EqSFLaw}) &
 Instantaneous star formation rate. \\
 
 SubGroupNumber &
-\S\ref{sect:fof} & \subgroupnumber \\
+\S\ref{SecFOF} & \subgroupnumber \\
 
 Temperature &
-\S\ref{sect:thermo} &
+\S\ref{SecThermo} &
 Temperature \\
 
 TotalMassFromAGB &
-\S\ref{sect:abundances} &
+\S\ref{SecAbundances} &
 Total mass received from AGB. \\
 
 TotalMassFromSNII &
-\S\ref{sect:abundances} &
+\S\ref{SecAbundances} &
 Total mass received from SNII. \\
 
 TotalMassFromSNIa &
-\S\ref{sect:abundances} &
+\S\ref{SecAbundances} &
 Total mass received from SNIa. \\
 
 Velocities &
-S\ref{sect:part} & \velocity \\
+S\ref{SecParticles} & \velocity \\
 
 \hline
 \end{tabular}
@@ -768,7 +829,7 @@ S\ref{sect:part} & \velocity \\
 \end{table}
 
 \begin{table}
-\label{table:dm}
+\label{TabDM}
 \caption{Description and equation, where applicable, for each property of dark matter
 (PartType1) particles.}
 \begin{center}
@@ -780,23 +841,23 @@ S\ref{sect:part} & \velocity \\
 Field & Equation/Par & Description \\ \hline\hline
 
 Coordinates &
-\S\ref{sect:part} &
+\S\ref{SecParticles} &
 \coordinates \\
 
 GroupNumber &
-\S\ref{sect:fof} &
+\S\ref{SecFOF} &
 \groupnumber \\
 
 ParticleIDs &
-\S\ref{sect:fof} & Unique particle identifier. Index encodes the particles position in the
-initial conditions (see \cite{schaye2015} for details). \\
+\S\ref{SecFOF} & Unique particle identifier. Index encodes the particles position in the
+initial conditions (see \cite{2015MNRAS.446..521S} for details). \\
 
 SubGroupNumber &
-\S\ref{sect:fof} &
+\S\ref{SecFOF} &
 \subgroupnumber \\
 
 Velocities &
-\S\ref{sect:part} & \velocity \\
+\S\ref{SecParticles} & \velocity \\
 
 \hline
 \end{tabular}
@@ -804,7 +865,7 @@ Velocities &
 \end{table}
 
 \begin{table}
-\label{table:boundary2}
+\label{TabBoundary2}
 \caption{Description and equation, where applicable, for each property of boundary
 (PartType2) particles.}
 \begin{center}
@@ -816,23 +877,23 @@ Velocities &
 Field & Equation/Par & Description \\ \hline\hline
 
 Coordinates &
-\S\ref{sect:part} &
+\S\ref{SecParticles} &
 \coordinates \\
 
 GroupNumber &
-\S\ref{sect:fof} &
+\S\ref{SecFOF} &
 \groupnumber \\
 
 ParticleIDs &
-\S\ref{sect:fof} & Unique particle identifier. Index encodes the particles position in the
-initial conditions (see \cite{schaye2015} for details). \\
+\S\ref{SecFOF} & Unique particle identifier. Index encodes the particles position in the
+initial conditions (see \cite{2015MNRAS.446..521S} for details). \\
 
 SubGroupNumber &
-\S\ref{sect:fof} &
+\S\ref{SecFOF} &
 \subgroupnumber \\
 
 Velocities &
-\S\ref{sect:part} & \velocity \\
+\S\ref{SecParticles} & \velocity \\
 
 \hline
 \end{tabular}
@@ -840,7 +901,7 @@ Velocities &
 \end{table}
 
 \begin{table}
-\label{table:boundary3}
+\label{TabBoundary3}
 \caption{Description and equation, where applicable, for each property of boundary
 (PartType3) particles.}
 \begin{center}
@@ -852,23 +913,23 @@ Velocities &
 Field & Equation/Par & Description \\ \hline\hline
 
 Coordinates &
-\S\ref{sect:part} &
+\S\ref{SecParticles} &
 \coordinates \\
 
 GroupNumber &
-\S\ref{sect:fof} &
+\S\ref{SecFOF} &
 \groupnumber \\
 
 ParticleIDs &
-\S\ref{sect:fof} & Unique particle identifier. Index encodes the particles position in the
-initial conditions (see \cite{schaye2015} for details). \\
+\S\ref{SecFOF} & Unique particle identifier. Index encodes the particles position in the
+initial conditions (see \cite{2015MNRAS.446..521S} for details). \\
 
 SubGroupNumber &
-\S\ref{sect:fof} &
+\S\ref{SecFOF} &
 \subgroupnumber \\
 
 Velocities &
-\S\ref{sect:part} & \velocity \\
+\S\ref{SecParticles} & \velocity \\
 
 \hline
 \end{tabular}
@@ -876,7 +937,7 @@ Velocities &
 \end{table}
 
 \begin{table}
-\label{table:star}
+\label{TabStar}
 \caption{Description and equation, where applicable, for each property of star
 (PartType4) particles.}
 \begin{center}
@@ -888,30 +949,30 @@ Velocities &
 Field & Equation/Par & Description \\ \hline\hline
 
 AExpMaximumTemperature &
-\S\ref{sect:thermo} &
+\S\ref{SecThermo} &
 Expansion factor a when particle had highest temperature. \\
 
 BirthDensity &
-\S\ref{sect:sfr} & Local gas density when gas particle was converted to star\\
+\S\ref{SecSFR} & Local gas density when gas particle was converted to star\\
 
 Coordinates &
-\S\ref{sect:part} &
+\S\ref{SecParticles} &
 Co-moving Coordinates. \\
 
 ElementAbundance &
-\S\ref{sect:abundances} &
+\S\ref{SecAbundances} &
 Mass of [Carbon, Helium, Hydrogen, Iron, Magnesium, Neon, Nitrogen, Oxygen,
 Silicon] divided by particle mass. \\
 
 Feedback\_EnergyFraction &
-S\ref{sect:feedback} &
+S\ref{SecFeedback} &
 Fraction of energy used for thermal feedback, defined such that a value of
 unity corresponds to the energy released by the population of Type II SNe (each
 producing 10$^{51}$ erg) described by a Chabrier IMF, with SNe progenitors
 having initial masses of 6-100 M$_{\odot}$. \\
 
 GroupNumber &
-\S\ref{sect:part} &
+\S\ref{SecParticles} &
 \groupnumber \\
 
 HostHalo\_TVir &
@@ -924,84 +985,88 @@ Estimate of host FoF groups virial temperature, calculated from the local
 velocity dispersion. \\
 
 InitialMass &
-\S\ref{sect:feedback} &
+\S\ref{SecFeedback} &
 Mass at formation time. \\
 
 IronMassFracFromSNIa &
 - & Mass of Iron from SNIa divided by particle mass. \\
 
-Mass &
-\S\ref{sect:feedback} & Current particle mass. \\
+Masses &
+\S\ref{SecFeedback} & This variable was called `\texttt{Mass}' in \eagle. Current particle mass. \\
 
 MaximumTemperature &
-\S\ref{sect:thermo} & Maximum temperature ever reached by particle. \\
+\S\ref{SecThermo} & Maximum temperature ever reached by particle. \\
 
 MetalMassFracFromAGB &
-\S\ref{sect:abundances} &
+\S\ref{SecAbundances} &
 Mass of metals received from AGB divided by particle mass. \\
 
 MetalMassFracFromSNII &
-\S\ref{sect:abundances}  &
+\S\ref{SecAbundances}  &
 Mass of metals received from SNII divided by particle mass. \\
 
 MetalMassFracFromSNIa &
-\S\ref{sect:abundances}  &
+\S\ref{SecAbundances}  &
 Mass of metals received from SNIa divided by particle mass. \\
 
+MetalMassWeightedRedsfhit &
+\S\ref{??} &
+?? \\
+
 Metallicity &
-\S\ref{sect:abundances}  & Mass of elements heavier than Helium, including
+\S\ref{SecAbundances}  & Mass of elements heavier than Helium, including
 those not tracked individually,  divided by particle mass. \\
 
 ParticleIDs &
-\S\ref{sect:part} &
+\S\ref{SecParticles} &
 Unique particle identifier. ID is inherited from parent gas particle. \\
 
 PreviousStellarEnrichment &
-\S\ref{sect:feedback} &
+\S\ref{SecFeedback} &
 Expansion factor when this star particle last enriched its neighbours. \\
 
 SmoothedElementAbundance &
-\S\ref{sect:abundances}  &
+\S\ref{SecAbundances}  &
 SPH kernel weighted ElementAbundance. \\
 
 SmoothedIronMassFracFromSNIa &
-\S\ref{sect:abundances}  &
+\S\ref{SecAbundances}  &
 SPH kernel weighted IronMassFracFromSNIa. \\
 
 SmoothedMetallicity &
-\S\ref{sect:abundances}  &
+\S\ref{SecAbundances}  &
 SPH kernel weighted Metallicity. \\
 
 SmoothingLength &
-\S\ref{sect:part} &
+\S\ref{SecParticles} &
 Co-moving SPH smoothing kernel. \\
 
 StellarEnrichmentCounter &
-\S\ref{sect:abundances}  &
+\S\ref{SecAbundances}  &
 Number of timesteps since enrichment was last performed by this particle. \\
 
 StellarFormationTime &
-\S\ref{sect:feedback} &
+\S\ref{SecFeedback} &
 Expansion factor when this star particle was born. \\
 
 SubGroupNumber &
-\S\ref{sect:part} &
+\S\ref{SecParticles} &
 \subgroupnumber \\
 
 TotalMassFromAGB &
-\S\ref{sect:abundances} &
+\S\ref{SecAbundances} &
 Total mass received from AGB. \\
 
 TotalMassFromSNII &
-\S\ref{sect:abundances} &
+\S\ref{SecAbundances} &
 Total mass received from SNII. \\
 
 TotalMassFromSNIa &
-\S\ref{sect:abundances} &
+\S\ref{SecAbundances} &
 Total mass received from SNIa. \\
 
 Velocities &
-\S\ref{sect:part}& \velocity \\
+\S\ref{SecParticles}& \velocity \\
 
 \hline
 \end{tabular}
@@ -1009,7 +1074,7 @@ Velocities &
 \end{table}
 
 \begin{table}
-\label{table:bh}
+\label{TabBH}
 \caption{Description and equation, where applicable, for each property of black hole
 (PartType5) particles.}
 \begin{center}
@@ -1020,82 +1085,98 @@ Velocities &
 \hline
 Field & Equation/Par & Description \\ \hline\hline
 
+BH\_AccretionLength &
+\S\ref{??} &
+?? \\
+
 BH\_CumlAccrMass &
-\S\ref{sect:BH} &
+\S\ref{SecBH} &
 Cumulative mass that has been accreted onto this black hole.  \\
 
 BH\_CumlNumSeeds &
-\S\ref{sect:BH} &
+\S\ref{SecBH} &
 Cumulative number of black hole seeds swallowed by this black hole. \\
 
 BH\_Density &
-\S\ref{sect:BH} &
+\S\ref{SecBH} &
 Co-moving gas density at the location of the black hole. \\
 
 BH\_FormationTime &
-\S\ref{sect:BH} &
+\S\ref{SecBH} &
 Scale factor when this black hole was formed. \\
 
+BH\_EnergyReservoir &
+\S\ref{??} &
+?? \\
+
+BH\_FormationTime &
+\S\ref{??} &
+?? \\
+
 BH\_Mass &
-\S\ref{sect:BH} &
-Black hole \textit{subgrid} mass (see Appendix of \cite{mcalpine2016} for more details). \\
+\S\ref{SecBH} &
+Black hole \textit{subgrid} mass (see Appendix of \cite{2016A&C....15...72M} for more details). \\
 
 BH\_Mdot &
-\S\ref{sect:BH} &
+\S\ref{SecBH} &
 Instantaneous black hole accretion rate. \\
 
 BH\_MostMassiveProgenitorID &
-\S\ref{sect:BH} &
+\S\ref{SecBH} &
 At the time of the last BH-BH merger, this is the ParticleID of the most massive member of the pair. \\
 
 BH\_Pressure &
-\S\ref{sect:BH} &
+\S\ref{SecBH} &
 Gas pressure at the location of the black hole. \\
 
 BH\_SoundSpeed &
-\S\ref{sect:BH} &
+\S\ref{SecBH} &
 Gas sound speed at the location of the black hole. \\
 
 BH\_SurroundingGasVel &
-\S\ref{sect:BH} &
+\S\ref{SecBH} &
 Peculiar velocity of the gas at the location of the black hole. \\
 
 BH\_TimeLastMerger  &
-\S\ref{sect:BH} &
+\S\ref{SecBH} &
 Expansion factor when black hole particle last accreted another black hole. 0 if the particle has never accreted another black hole. \\
 
+BH\_WeightedDensity &
+\S\ref{??} &
+?? \\
+
 Coordinates &
-\S\ref{sect:part} &
+\S\ref{SecParticles} &
 \coordinates \\
 
 GroupNumber &
-\S\ref{sect:fof} &
+\S\ref{SecFOF} &
 \groupnumber \\
 
 HostHalo\_TVir\_Mass &
 - &
 Estimate of host FoF group's virial temperature, calculated from the local velocity dispersion. \\
 
-Mass &
-\S\ref{sect:part} &
-BH \textit{particle} mass. Users should use the black hole subgrid mass ({\sc
+Masses &
+\S\ref{SecParticles} &
+This variable was called `\texttt{Mass}' in \eagle. BH \textit{particle} mass. Users should use the black hole subgrid mass ({\sc
 BH\_Mass}) for the actual black hole subgrid mass.\\
 
 ParticleIDs &
-\S\ref{sect:part} &
+\S\ref{SecParticles} &
 Unique particle identifier. ID is inherited from parent gas particle. \\
 
 SmoothingLength &
-\S\ref{sect:part} &
+\S\ref{SecParticles} &
 Co-moving SPH smoothing kernel. \\
 
 SubGroupNumber &
-\S\ref{sect:fof}
+\S\ref{SecFOF}
 &
 \subgroupnumber \\
 
 Velocities &
-\S\ref{sect:part} & \velocity \\
+\S\ref{SecParticles} & \velocity \\
 
 \hline
 \end{tabular}
@@ -1103,35 +1184,12 @@ Velocities &
 \end{table}
 
 \section{Acknowledging these data}
-This document is \emph{not} intended to serve as a reference for \eagle.  Users
-of \eagle\ data are kindly requested to acknowledge and cite the original
-sources following the instructions listed in section 4.2 of
-\cite{mcalpine2016}, which we repeat here for completeness:
+This document is \emph{not} intended to serve as a reference for \apostle.  Users of \apostle\ data are kindly requested to acknowledge and cite the original sources: \cite{2016MNRAS.457.1931S,2016MNRAS.457..844F}.
 
-To recognise the effort of the individuals involved in the design and execution
-of these simulations, in their post processing and in the construction of the
-database, we kindly request the following:
-
-\begin{itemize}
-\item Publications making use of the \eagle\ data extracted from the public
-database or particle data are kindly requested to cite the original papers
-introducing the project \cite{schaye2015,crain2015} as well as the paper
-describing the public release of the galaxy data \cite{mcalpine2016}.
-\item Publications making use of the database should add the following line in
-their acknowledgement section: "We acknowledge the Virgo Consortium for making
-their simulation data available. The \eagle\ simulations were performed using
-the DiRAC-2 facility at Durham, managed by the ICC, and the PRACE facility
-Curie based in France at TGCC, CEA, Bruy\`eresle-Ch\^atel.".
-\item Furthermore, publications referring to specific aspects of the subgrid
-models, hydrodynamics solver, or post-processing steps (such as the
-construction of images or photometric quantities, and the construction of
-merger trees), are kindly requested to not only cite the above papers, but also
-the original papers describing these aspects. The appropriate references can be
-found in section 2 of this paper and in \cite{schaye2015}.
-\end{itemize}
+In addition, we request that work making use of \apostle\ data include the following acknowledgement: ``We acknowledge the \apostle\ team for making their simulation data available. The \apostle\ simulations were performed using the DiRAC-2 facility at Durham, managed by the ICC, and resources provided by WestGrid and Compute Canada.'' Furthermore, publications referring to the \eagle\ simulations or model should cite \cite{2015MNRAS.446..521S,2015MNRAS.450.1937C}, and those refering to specific aspects of the subgrid models, hydrodynamics solver, or post-processing steps (such as the construction of images or photometric quantities, and the construction of merger trees), are kindly requested to not only cite the above papers, but also the original papers describing these aspects. The appropriate references can be found in Sec.~\ref{??} and in \cite{2015MNRAS.446..521S,2015MNRAS.450.1937C}.
 
 \newpage
 \bibliographystyle{unsrt}
-\bibliography{ParticleRelease}
+\bibliography{paper}
 
 \end{document}
