@@ -68,6 +68,7 @@ showstringspaces=false            %
 \newcommand{\hdf}{{\sc hdf5}}
 \newcommand{\gadget}{{\sc gadget}}
 \newcommand{\HaloID}{{\texttt{HaloID}}}
+\newcommand{\dtrees}{{\sc D-Trees}}
 \begin{document}
 \maketitle
 
@@ -122,6 +123,21 @@ For each simulation we release 128 snapshot outputs between redshift $20$ and $0
 At each redshift the galaxies are processed one-by-one to produce integrated quantities from the raw particle information. These are the quantities stored in the different tables of the database.
 
 For the simplest quantities, such as galaxy mass, metallicity or star formation rate, the post-processing only involves a simple summation over the particles, but other quantities, such as luminosities in various filters, require much more involved calculations. The full list of quantities present in the database, together with a description of the post-processing operations performed, is given in Sec.~\ref{appendix_quantities}. To allow for an easier comparison with observational measurements, masses, star formation rates and velocity dispersions are also computed within fixed spherical apertures.
+
+\subsection{Merger trees}
+\label{SubsecMergerTrees}
+
+Descendant subhaloes and hence galaxies are identified using the \dtrees\ algorithm \citep{2014MNRAS.440.2115J}, with a complete description of its adaptation to the \eagle\ simulations provided in \citet{2017MNRAS.464.1659Q}. In essence, the algorithm traces subhaloes using the $N_{\text{link}}$ most bound particles of any species, identifying the subhalo that contains the majority of these particles as a subhalo's descendant at the next output time.  We define $N_{\rm link} = \min(100, \max(0.1N_{\rm galaxy}, 10))$, where $N_{\rm galaxy}$ is the total number of particles in the parent subhalo.  This allows the identification of descendants, even in the case where most particles have been stripped and it minimises the misprediction of mergers during fly-bys \citep{2008MNRAS.386..577F,2009ApJ...701.2002G}.
+
+The galaxy with the most $N_{\rm link}$ particles at the next output is identified as the single \emph{descendant} of a galaxy, while a descendant galaxy can have multiple progenitors. The trees are stored in memory following the method introduced by \cite{2006ASPC..351..212L} for the \emph{Millennium Simulation} \citep[See also the supplementary material of][where the details of the tree ordering are summarized]{2005Natur.435..629S}. However, the \emph{main progenitor}, corresponding to the main branch of the tree, is defined as the progenitor with the largest `branch mass', i.e., the mass summed across all earlier outputs as proposed by \cite{2007MNRAS.375....2D}. This definition of the main progenitor, as opposed to the simple definition of the progenitor with the largest mass, is used to avoid main branch swapping in the case of similar-mass mergers, as explained by \citet{2017MNRAS.464.1659Q}. Note that because the progenitor with the largest branch mass determines the main branch of the tree, main branch galaxies do not necessarily correspond to the central galaxy (or \texttt{SubGroupNumber} $= 0$ galaxy) of a given halo.
+
+There are two further aspects of the merger trees that must be kept in mind during analysis:
+\begin{itemize}
+\item A galaxy can disappear from a snapshot but reappear at a later time (e.g. if one galaxy passes through another one).  To account for this, descendants are identified using up to 5 snapshots at later times.
+\item Care must be taken when determining mass ratios, for example in the case of mergers, as galaxies can lose or gain mass due to the definition of the subhaloes.
+\end{itemize}
+
+Both of these relatively rare cases are considered further by \citet{2017MNRAS.464.1659Q}, who discuss their impact on the assembly of galaxy mass.
 
 \section{The \apostle\ zoom-in regions}
 
